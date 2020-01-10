@@ -6,6 +6,7 @@ namespace NATS
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Scanning...");
             Scanner scanner = new Scanner(ArgsToArg(args));
             Console.WriteLine(scanner.Scan());
         }
@@ -16,5 +17,5 @@ namespace NATS
     }
 
 
-
+    //@"-P C:\Users\liuko\source\repos -K if -S -M -O d:\1.txt -B targets|cs"
 }

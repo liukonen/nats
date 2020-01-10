@@ -14,6 +14,12 @@ NATS is a basic plain text file scanner.
  -S                Scans all Subdirectories of the Paths Table, as well as its root
  -T[X]             Implements Multithreading Scanning, with X being the number of 
                    Threads. If empty, it will be set to 4 
+ -M                Implements "Smart Search" which uses the byte order mark at the start
+                   of the file to assist in filtering out non text files. This process is
+                   not 100% accurate.
+ -R                Loads files under 10MB into Ram for Comparision. This was implemented
+                   because I noticed NVME drives would spike some machines, which appeared
+                   to be related to the ReadLines. Does Not work the the -L command yet.
  -O[path]          Will output the command to the specified path file
  -B [ext]          Implements a Blacklist of file extentions not to scan. 
                    extentions will be deliminated with the | symbol. NAPS has a default
