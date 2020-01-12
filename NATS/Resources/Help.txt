@@ -13,7 +13,8 @@ NATS is a basic plain text file scanner.
  -P [path] <req>
  -S                Scans all Subdirectories of the Paths Table, as well as its root
  -T[X]             Implements Multithreading Scanning, with X being the number of 
-                   Threads. If empty, it will be set to 4 
+                   Threads. If not set, single thread is used. If [X] is empty, it will
+                   be set to 4 threads. 
  -M                Implements "Smart Search" which uses the byte order mark at the start
                    of the file to assist in filtering out non text files. This process is
                    not 100% accurate.
@@ -25,7 +26,8 @@ NATS is a basic plain text file scanner.
                    extentions will be deliminated with the | symbol. NAPS has a default
                    blacklist of [7z|bmp|doc|docx|jpg|m4v|mov|mp3|mp4|pdf|png|tmp|xls|xlsx] 
                    and implementing this will override the default
- -W [SearchPatern] The search string to match against the names of files in path. 
+ -W [ext]          The reverse of the Blacklist extention. Blacklist is disabled if 
+                   Whitelist is filled.
                    This parameter can contain a combination of valid literal path 
                    and wildcard (* and ?) characters, but it doesn't support 
                    regular expressions.

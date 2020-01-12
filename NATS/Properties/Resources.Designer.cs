@@ -61,15 +61,24 @@ namespace NATS.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to -- NATS Complete - .
+        /// </summary>
+        internal static string Fin {
+            get {
+                return ResourceManager.GetString("Fin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to NATS is a basic plain text file scanner.
-        /// Usage: NATS -P &lt;path(s)&gt; -K &lt;keyword(s)&gt; [options]
+        /// Usage: NATS -P &lt;path&gt; -K &lt;keyword&gt; [options]
         /// Keyword Options--------------------------------------------------------------
         /// Keywords can be any group of words, including spaces. The | character will be
         /// used as a seperator of keywords unless the -| option is used
         ///
         /// Paths Options----------------------------------------------------------------
         /// You can also pass in more then one path location to scan by using the | 
-        /// seperator. This is NOT disabled with [rest of string was truncated]&quot;;.
+        /// seperator. This is NOT disabled with the - [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Help {
             get {
@@ -78,11 +87,29 @@ namespace NATS.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to -----------------------------------------------------------------.
         /// </summary>
-        internal static string String1 {
+        internal static string Line {
             get {
-                return ResourceManager.GetString("String1", resourceCulture);
+                return ResourceManager.GetString("Line", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NATS.
+        /// </summary>
+        internal static string Name {
+            get {
+                return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  - .
+        /// </summary>
+        internal static string Seperator {
+            get {
+                return ResourceManager.GetString("Seperator", resourceCulture);
             }
         }
     }
