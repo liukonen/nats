@@ -12,9 +12,13 @@ NATS is a basic plain text file scanner.
  -K [keyword]<req> Keyword text to search for
  -P [path] <req>
  -S                Scans all Subdirectories of the Paths Table, as well as its root
- -T[X]             Implements Multithreading Scanning, with X being the number of 
-                   Threads. If not set, single thread is used. If [X] is empty, it will
-                   be set to 4 threads. 
+ -T[X]             (Search Type) Only -T or -I can be used at a time. Not setting the value
+                   indicates a single thread search. -T Implements Multithreading Scanning, 
+                   with X being the number of Threads. If not set, single thread is used. 
+                   If [X] is empty, it will be set to 4 threads.
+ -I                (Search Type) Only -T or -I can be used at a time. Not setting the value
+                   indicates a single thread search. Type I uses Windows build in Indexing
+                   to find files. Indexing must be turned on in order for this to work.
  -M                Implements "Smart Search" which uses the byte order mark at the start
                    of the file to assist in filtering out non text files. This process is
                    not 100% accurate.
