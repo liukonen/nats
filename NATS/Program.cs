@@ -16,10 +16,6 @@ namespace NATS
         //@"-P C:\Users\liuko\source\repos -K if -S -M -O d:\1.txt -B targets|cs"
         static void Main(string[] args)
         {
-
-
-            args = new string[] { @"-P c:\", "-I", "-K if" };
-
             List<string> HeaderItems = new List<string>();
             string consoleOutput;
             StringBuilder FilesFound = new StringBuilder();
