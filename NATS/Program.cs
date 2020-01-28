@@ -16,10 +16,14 @@ namespace NATS
         //@"-P C:\Users\liuko\source\repos -K if -S -M -O d:\1.txt -B targets|cs"
         static void Main(string[] args)
         {
+
+
+            args = new string[] { @"-P c:\", "-I", "-K if" };
+
             List<string> HeaderItems = new List<string>();
             string consoleOutput;
             StringBuilder FilesFound = new StringBuilder();
-            string fullArgs = @"-P D:\choco -K return -S -T";//ArgsToArg(args);
+            string fullArgs = ArgsToArg(args);
 
             ArgumentsObject.ArgumentsObject ScanArg = new ArgumentsObject.ArgumentsObject(fullArgs);
             if (!ScanArg.DisplayHelp)
@@ -31,25 +35,23 @@ namespace NATS
 
                 IEnumerable<FileInfo> Files = (new DirectoryInfo(ScanArg.DirectoryPath)).EnumerateFiles("*", ScanArg.EOptions);
 
-                if (ScanArg.SearchType == ArgumentsObject.ArgumentsObject.eSearchType.Single)
+
+                SearchTypes.Searchbase Search;
+
+                switch (ScanArg.SearchType)
                 {
-                    foreach (FileInfo item in Files)
-                    {
-                        var Response = CheckFile(item, ScanArg);
-                        if (Response.Item1) { FilesFound.Append(Response.Item2).Append(Environment.NewLine); }
-                    }
+
+                    case ArgumentsObject.ArgumentsObject.eSearchType.Threaded:
+                        Search = new SearchTypes.MultiThread(ScanArg); break;
+                    case ArgumentsObject.ArgumentsObject.eSearchType.Index: Search = new SearchTypes.Index(ScanArg);
+                        break;
+                    default:
+                        Search = new SearchTypes.SingleThread(ScanArg); break;
                 }
-                else
-                {
-                    ConcurrentBag<string> ReturnItems = new ConcurrentBag<string>();
-                    ParallelOptions Options = new ParallelOptions() { MaxDegreeOfParallelism = ScanArg.ThreadCount };
-                    Parallel.ForEach(Files, Options, (currentFile) =>
-                    {
-                        var response = CheckFile(currentFile, ScanArg);
-                        if (response.Item1) { ReturnItems.Add(response.Item2); }
-                    });
-                    FilesFound.Append(string.Join(Environment.NewLine, from string X in ReturnItems select X));
-                }
+                Search.Execute();
+                FilesFound.Append(Search.ToString());
+
+
                 FilesFound.Append(Resources.Fin + Environment.NewLine + "End timestamp:" + GetDateTime()) ;
 
                 if (!string.IsNullOrWhiteSpace(ScanArg.FileNameOutput))
@@ -68,14 +70,6 @@ namespace NATS
         static string ArgsToArg(string[] args)
         { return string.Join(' ', args); }
 
-        static Tuple<bool, string> CheckFile(FileInfo item, ArgumentsObject.ArgumentsObject Object)
-        {
-            var NotValid = (from NATS.Filters.FileInfoFilters F in Object.FileInfoFilters where F.IsValid(item) == false select F).Any();
-            if (!NotValid) //double negative... could word it better
-            {
-                return Object.Comparer.Compare(item, Object.KeywordSearch);
-            }
-            return new Tuple<bool, string>(false, string.Empty);
-        }
+       
     }
 }

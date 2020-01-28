@@ -4,9 +4,9 @@ using System.Text;
 
 namespace NATS.ArgumentsObject
 {
-    class ArgumentsObject
+    public class ArgumentsObject
     {
-        public enum eSearchType { Single, Threaded }
+        public enum eSearchType { Single, Threaded, Index }
         public int ThreadCount;
         public string DirectoryPath;
         public string KeywordSearch;
@@ -75,6 +75,7 @@ namespace NATS.ArgumentsObject
                         case "R": MemoryLoad = true; break;
                         case "M": FileInfoFilters.Add(new Filters.SmartSearchFilter()); break;
                         case "O": FileNameOutput = itemVal; break;
+                        case "I": SearchType = eSearchType.Index; break;
                     }
                 }
 
