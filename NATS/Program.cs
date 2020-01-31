@@ -13,9 +13,12 @@ namespace NATS
 {
     class Program
     {
+        //Luke Liukonen
         //@"-P C:\Users\liuko\source\repos -K if -S -M -O d:\1.txt -B targets|cs"
         static void Main(string[] args)
         {
+
+            Index.SQLiteIndex I = new Index.SQLiteIndex();
             List<string> HeaderItems = new List<string>();
             string consoleOutput;
             StringBuilder FilesFound = new StringBuilder();

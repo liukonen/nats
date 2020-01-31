@@ -40,4 +40,12 @@ NATS is a basic plain text file scanner.
                    keyword appears as well (Note: this search will take longer as it needs
                    to read through the entire file for keywords)
 -H                 Ignores all other Inputs and displays this help file
+-RI                Does not take in Keyword, but does take in path. Executes Custom indexing
+                   On the directory and saves it to the NATS database, which is stored locally.
+                   If the directory has been indexed, it will refresh the index and files. File 
+                   types searched are determaned based on the "smart search" logic.
+-CI                (Search Type) Only -T or -I can be used at a time. Not setting the value
+                   indicates a single thread search. Type CI uses NATS build in Indexing
+                   to find files. Indexing must have been executed on the directory
+                   in order for this to work.
  
