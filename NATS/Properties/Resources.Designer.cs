@@ -61,6 +61,15 @@ namespace NATS.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 7z|bmp|db|db-journal|dll|doc|docx|exe|jpg|m4v|mov|mp3|mp4|pdb|pdf|png|tmp|xls|xlsx|zip.
+        /// </summary>
+        internal static string DefaultBlacklist {
+            get {
+                return ResourceManager.GetString("DefaultBlacklist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to -- NATS Complete - .
         /// </summary>
         internal static string Fin {
@@ -71,14 +80,16 @@ namespace NATS.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to NATS is a basic plain text file scanner.
-        /// Usage: NATS -P &lt;path&gt; -K &lt;keyword&gt; [options]
-        /// Keyword Options--------------------------------------------------------------
-        /// Keywords can be any group of words, including spaces. The | character will be
-        /// used as a seperator of keywords unless the -| option is used
+        /// Usage: NATS -P &lt;path&gt; -K &lt;keyword&gt; [Search Type] [options]
         ///
-        /// Paths Options----------------------------------------------------------------
-        /// You can also pass in more then one path location to scan by using the | 
-        /// seperator. This is NOT disabled with the - [rest of string was truncated]&quot;;.
+        /// Required Fields--------------------------------------------------------------
+        ///
+        /// -K [keyword]    Keyword text to search for
+        /// -P [path]       Dirrectory path to search through
+        ///
+        /// Search Types-----------------------------------------------------------------
+        /// -T[X]            Not setting the value indicates a single thread search. -T 
+        ///                  Implements Multithreading Scanning, with X being  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Help {
             get {
