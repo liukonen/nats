@@ -7,8 +7,8 @@ NATS is a basic plain text file scanner.
  -P [path]       Dirrectory path to search through
 
 
-                 
-                /* -ApprovedList (whitelist)
+ShortList: Options                 
+                 * -ApprovedList (whitelist)
                  * -Build Index
                  * -DisapprovedList (BlackList)
                  * -Help
@@ -21,7 +21,7 @@ NATS is a basic plain text file scanner.
                  * -Ram [memory]
                  * -SmartSearch
                  * -Threading
-                 * -Windows index search*/
+                 * -Windows index search
 
  Search Types-----------------------------------------------------------------
  -T[X]            Threading: Not setting the value indicates a single thread 
@@ -52,24 +52,24 @@ NATS is a basic plain text file scanner.
 
  -S              Smart Search: uses the byte order mark at the start of the 
                  file to assist in filtering out non text files. This process 
-                 is not 100% accurate, however is set for index based searchs.
+                 is not 100% accurate, however is set for index based search.
 
- -R              RAM: Loads files under 10MB into Ram for Comparision. This 
+ -R              RAM: Loads files under 10MB into Ram for comparison. This 
                  in theory should reduce IO spikes on the System process on 
-                 non indexed searchs.Does Not work the the -L command.
+                 non indexed searches. Does Not work the the -L command.
 
  -O[path]        Output: Will output the command to the specified path file
 
- -D [ext]        Disapproved Extentions: Implements filtering of file 
-                 extentions not to scan. Multiple extentions will be 
+ -D [ext]        Disapproved Extensions: Implements filtering of file 
+                 extensions not to scan. Multiple extensions will be 
                  deliminated with the | symbol. NAPS has a default blacklist 
                  of [7z|bmp|db|db-journal|dll|doc|docx|exe|jpg|m4v|mov|mp3|mp4
                  |pdb|pdf|png|tmp|xls|xlsx|zip] and invoking this will 
                  override the default
 
- -A [ext]        Approved Extentions: The reverse of the disapproved 
-                 extention, which is disabled if -A is sent. Will only search 
-                 files with the perticular extention.
+ -A [ext]        Approved Extensions: The reverse of the disapproved 
+                 extension, which is disabled if -A is sent. Will only search 
+                 files with the particular extension.
 
  -M              MultiLine: By default NATS will only indicate if the file 
                  contains the selected keyword. Adding the M keyword on 
@@ -78,4 +78,4 @@ NATS is a basic plain text file scanner.
                  longer as it needs to read through the entire file for 
                  keywords)
 
- -H              Ignores all other Inputs and displays this help file
+ -H              Help: Ignores all other Inputs and displays this help file

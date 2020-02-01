@@ -19,6 +19,8 @@ namespace NATS
             string consoleOutput;
             StringBuilder FilesFound = new StringBuilder();
             string fullArgs = ArgsToArg(args);
+
+            fullArgs = @"-p c:\users\liuko\source -k luke -I";
             ArgumentsObject.ArgumentsObject ScanArg = new ArgumentsObject.ArgumentsObject(fullArgs);
             if (!ScanArg.DisplayHelp)
             {
