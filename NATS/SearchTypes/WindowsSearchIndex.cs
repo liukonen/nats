@@ -5,17 +5,16 @@ using System.Data.OleDb;
 
 namespace NATS.SearchTypes
 {
-    class Index :Searchbase
+    class WindowsSearchIndex :Searchbase
     {
-        const string DBConnection = "Provider=Search.CollatorDSO.1;Extended? Properties = 'Application=Windows';";   
-
-        public Index(ArgumentsObject.ArgumentsObject O) : base(O) { }
+        const string DBConnection = "Provider=Search.CollatorDSO.1;Extended? Properties = 'Application=Windows';";
+        const string Proc = "SELECT System.ItemPathDisplay FROM SYSTEMINDEX WHERE scope='{0}' and FREETEXT('%{1}%')";// and contains('%{Arguments.KeywordSearch}%')";
+        public WindowsSearchIndex(ArgumentsObject.ArgumentsObject O) : base(O) { }
 
         public override void Execute()
         {
             System.Text.StringBuilder SB = new StringBuilder();
-            string query = $"SELECT System.ItemPathDisplay FROM SYSTEMINDEX WHERE scope='{Arguments.DirectoryPath}' and FREETEXT('%{Arguments.KeywordSearch}%')";// and contains('%{Arguments.KeywordSearch}%')";
-
+            string query = string.Format(Proc, Arguments.DirectoryPath, Arguments.KeywordSearch); 
             using (OleDbConnection objConnection = new OleDbConnection(DBConnection))
             {
                 objConnection.Open();

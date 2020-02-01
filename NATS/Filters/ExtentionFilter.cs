@@ -13,35 +13,26 @@ namespace NATS.Filters
 
         public FileExtentionFilter(string ParamArguments, filterType type)
         {
-            FileExtentions = ExtractBlackListExtentions(ParamArguments);
+            FileExtentions = ExtractBlackListExtentions(ParamArguments, type);
             Ftype = type;
         }
 
         public override bool IsValid(FileInfo FileInfo)
         {
-
             if (FileExtentions.Contains(FileInfo.Extension.ToLower())) { return Ftype == filterType.WhiteList; }
             return (Ftype == filterType.BlackList);
-            /*
-             * Same as
-             * if (filterType.WhiteList)
-             * {
-             *   if (FileExtentions.Contains(FileInfo.Extension.ToLower())){return false;}
-             *   return true;
-             *  }else{
-             *  if (FileExtentions.Contains(FileInfo.Extension.ToLower())){return true;}
-             *  return false;
-             *  }
-             * */
         }
 
-        private static List<string> ExtractBlackListExtentions(string BlackListVaraible)
+        private static List<string> ExtractBlackListExtentions(string BlackListVaraible, filterType type)
         {
             List<string> BlackListArray = new List<string>();
+            if (BlackListVaraible == string.Empty && type == filterType.BlackList) { BlackListVaraible = NATS.Properties.Resources.DefaultBlacklist; }
+            
             foreach (string item in BlackListVaraible.Split('|'))
             {
-                string Ext = "." + item.Replace("|", string.Empty).ToLower();
-                if (!BlackListArray.Contains(Ext)) { BlackListArray.Add(Ext); }
+                string ext = item.ToLower();
+                if (!ext.StartsWith('.')) { ext = "." + ext; }
+                if (!BlackListArray.Contains(ext)) { BlackListArray.Add(ext); }
             }
             return BlackListArray;
         }

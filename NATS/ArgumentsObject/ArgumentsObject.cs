@@ -6,7 +6,7 @@ namespace NATS.ArgumentsObject
 {
     public class ArgumentsObject
     {
-        public enum eSearchType { Single, Threaded, Index }
+        public enum eSearchType { Single, Threaded, WindowsIndex, LocalIndex, IndexGenerate, indexgenerateandsearch }
         public int ThreadCount;
         public string DirectoryPath;
         public string KeywordSearch;
@@ -18,7 +18,7 @@ namespace NATS.ArgumentsObject
         {
             ReturnSpecialDirectories = false,
             IgnoreInaccessible = true,
-            RecurseSubdirectories = false
+            RecurseSubdirectories = true
         };
 
         public NATS.Comparers.baseComparer Comparer
@@ -59,26 +59,43 @@ namespace NATS.ArgumentsObject
                     {
                         case "P": DirectoryPath = itemVal; break;
                         case "K": KeywordSearch = itemVal; break;
+                        
                         case "T": 
                             if (!int.TryParse(itemVal, out ThreadCount))
                             { ThreadCount = 4; }
                             SearchType = eSearchType.Threaded;
                             break;
-                        case "B": ExtentionList = itemVal; break;
-                        case "W": 
-                            ExtentionList = itemVal; 
-                            FilterType = Filters.FileExtentionFilter.filterType.WhiteList; 
+                        case "D": ExtentionList = itemVal; break;
+                        case "A": 
+                            ExtentionList = itemVal; FilterType = Filters.FileExtentionFilter.filterType.WhiteList; 
                             break;
-                        case "L": MultiLine = true; break;
-                        case "S": EOptions.RecurseSubdirectories = true; break;
+                        case "M": MultiLine = true; break;
                         case "H": DisplayHelp = true; break;
                         case "R": MemoryLoad = true; break;
-                        case "M": FileInfoFilters.Add(new Filters.SmartSearchFilter()); break;
+                        case "S": FileInfoFilters.Add(new Filters.SmartSearchFilter()); break;
                         case "O": FileNameOutput = itemVal; break;
-                        case "I": SearchType = eSearchType.Index; break;
+                        case "W": SearchType = eSearchType.WindowsIndex; break;
+                        case "B": SearchType = eSearchType.IndexGenerate; break;
+                        case "L": SearchType = eSearchType.LocalIndex; break;
+                        case "I": SearchType = eSearchType.indexgenerateandsearch; break;
                     }
                 }
-
+                
+                /* -ApprovedList (whitelist)
+                 * -Build Index
+                 * -DisapprovedList (BlackList)
+                 * -Help
+                 * -Index search
+                 * -Limited Index Search (not fresh)
+                 * -Keyword
+                 * -MultiLine
+                 * -Output
+                 * -Path
+                 * -Ram [memory]
+                 * -SmartSearch
+                 * -Threading
+                 * -Windows index search*/
+       
             }
             if (String.IsNullOrWhiteSpace(KeywordSearch) || string.IsNullOrWhiteSpace(DirectoryPath)) { DisplayHelp = true; }
             FileInfoFilters.Add(new NATS.Filters.FileExtentionFilter(ExtentionList, FilterType));

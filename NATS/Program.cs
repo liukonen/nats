@@ -13,7 +13,6 @@ namespace NATS
 {
     class Program
     {
-        //@"-P C:\Users\liuko\source\repos -K if -S -M -O d:\1.txt -B targets|cs"
         static void Main(string[] args)
         {
             List<string> HeaderItems = new List<string>();
@@ -21,6 +20,7 @@ namespace NATS
             StringBuilder FilesFound = new StringBuilder();
             string fullArgs = ArgsToArg(args);
 
+            fullArgs = @"-p c:\users\liuko\source -k luke -I";
             ArgumentsObject.ArgumentsObject ScanArg = new ArgumentsObject.ArgumentsObject(fullArgs);
             if (!ScanArg.DisplayHelp)
             {
@@ -39,7 +39,17 @@ namespace NATS
 
                     case ArgumentsObject.ArgumentsObject.eSearchType.Threaded:
                         Search = new SearchTypes.MultiThread(ScanArg); break;
-                    case ArgumentsObject.ArgumentsObject.eSearchType.Index: Search = new SearchTypes.Index(ScanArg);
+                    case ArgumentsObject.ArgumentsObject.eSearchType.WindowsIndex: 
+                        Search = new SearchTypes.WindowsSearchIndex(ScanArg);
+                        break;
+                    case ArgumentsObject.ArgumentsObject.eSearchType.IndexGenerate:
+                        Search = new SearchTypes.InternalIndexGenerate(ScanArg);
+                        break;
+                    case ArgumentsObject.ArgumentsObject.eSearchType.LocalIndex:
+                        Search = new SearchTypes.InternalIndex(ScanArg);
+                        break;
+                    case ArgumentsObject.ArgumentsObject.eSearchType.indexgenerateandsearch:
+                        Search = new SearchTypes.InternalGenerateAndIndex(ScanArg);
                         break;
                     default:
                         Search = new SearchTypes.SingleThread(ScanArg); break;
