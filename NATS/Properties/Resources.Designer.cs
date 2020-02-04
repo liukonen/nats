@@ -87,13 +87,26 @@ namespace NATS.Properties {
         /// -K [keyword]    Keyword text to search for
         /// -P [path]       Dirrectory path to search through
         ///
-        /// Search Types-----------------------------------------------------------------
-        /// -T[X]            Not setting the value indicates a single thread search. -T 
-        ///                  Implements Multithreading Scanning, with X being  [rest of string was truncated]&quot;;.
+        ///
+        ///ShortList: Options                 
+        ///                 * -ApprovedList (whitelist)
+        ///                 * -Build Index
+        ///                 * -DisapprovedList (BlackList)
+        ///                 * -Help
+        ///                 * -Index search        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Help {
             get {
                 return ResourceManager.GetString("Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Data Source=nats.db;Version=3;.
+        /// </summary>
+        internal static string InternalIndexConnection {
+            get {
+                return ResourceManager.GetString("InternalIndexConnection", resourceCulture);
             }
         }
         
@@ -121,6 +134,15 @@ namespace NATS.Properties {
         internal static string Seperator {
             get {
                 return ResourceManager.GetString("Seperator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provider=Search.CollatorDSO.1;Extended? Properties = &apos;Application=Windows&apos;;.
+        /// </summary>
+        internal static string WinIndexConnection {
+            get {
+                return ResourceManager.GetString("WinIndexConnection", resourceCulture);
             }
         }
     }

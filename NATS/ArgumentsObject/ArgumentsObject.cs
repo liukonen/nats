@@ -1,11 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace NATS.ArgumentsObject
 {
     public class ArgumentsObject
     {
+        #region Private Properties
+
+        private bool MultiLine = false;
+        private bool MemoryLoad = false;
+        
+        #endregion
+        
+        #region Public Properties
         public enum eSearchType { Single, Threaded, WindowsIndex, LocalIndex, IndexGenerate, indexgenerateandsearch }
         public int ThreadCount;
         public string DirectoryPath;
@@ -13,36 +20,33 @@ namespace NATS.ArgumentsObject
         public Boolean DisplayHelp = false;
         public eSearchType SearchType = eSearchType.Single;
         public string FileNameOutput = string.Empty;
-
+        public List<NATS.Filters.FileInfoFilters> FileInfoFilters = new List<Filters.FileInfoFilters>();
         public System.IO.EnumerationOptions EOptions = new System.IO.EnumerationOptions()
         {
             ReturnSpecialDirectories = false,
             IgnoreInaccessible = true,
             RecurseSubdirectories = true
         };
-
         public NATS.Comparers.baseComparer Comparer
         {
-            get {
+            get
+            {
                 if (MultiLine)
-                { 
-                if (MemoryLoad) { return new Comparers.MultiLineLoadComparer(); }
-                    else { return new Comparers.MultiLineRawComparer(); }
+                {
+                    if (MemoryLoad) { return new Comparers.MultiLineLoadComparer(); }
+                    return new Comparers.MultiLineRawComparer();
                 }
                 else
-                { 
-                if (MemoryLoad) { return new Comparers.SingleLineLoadComparer(); }
-                else { return new Comparers.SingleLineRawComparer(); }
+                {
+                    if (MemoryLoad) { return new Comparers.SingleLineLoadComparer(); }
+                    return new Comparers.SingleLineRawComparer();
                 }
             }
         }
-
-
-        private bool MultiLine = false;
-        private bool MemoryLoad = false;
-
-        public List<NATS.Filters.FileInfoFilters> FileInfoFilters = new List<Filters.FileInfoFilters>();
-
+        #endregion
+    
+        #region Constructor
+  
         public ArgumentsObject(string arguments)
         {
             string ExtentionList = NATS.Filters.FileExtentionFilter.DefaultFileExtentions;
@@ -100,13 +104,6 @@ namespace NATS.ArgumentsObject
             if (String.IsNullOrWhiteSpace(KeywordSearch) || string.IsNullOrWhiteSpace(DirectoryPath)) { DisplayHelp = true; }
             FileInfoFilters.Add(new NATS.Filters.FileExtentionFilter(ExtentionList, FilterType));
         }
-
-        public void SaveOutputIfNeeded(StringBuilder TextToSave)
-        {
-            if (!string.IsNullOrWhiteSpace(FileNameOutput))
-            {
-                System.IO.File.WriteAllText(FileNameOutput, TextToSave.ToString());
-            }
-        }
+        #endregion
     }
 }

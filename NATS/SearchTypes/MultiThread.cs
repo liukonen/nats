@@ -9,7 +9,6 @@ namespace NATS.SearchTypes
 {
     class MultiThread :Searchbase
     {
-
         public MultiThread(ArgumentsObject.ArgumentsObject O) : base(O) { }
 
         public override void Execute()

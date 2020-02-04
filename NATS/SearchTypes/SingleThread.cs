@@ -20,7 +20,6 @@ namespace NATS.SearchTypes
                 if (Response.Item1) { FilesFound.Append(Response.Item2).Append(Environment.NewLine); }
             }
             output = FilesFound.ToString();
-            //return FilesFound;
         }
     }
 }
