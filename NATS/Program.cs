@@ -15,9 +15,6 @@ namespace NATS
             StringBuilder FilesFound = new StringBuilder();
             string fullArgs = ArgsToArg(args);
 
-            fullArgs = @"-p c:\users\liuko\source -k lml -B";
-
-
             ArgumentsObject.ArgumentsObject ScanArg = new ArgumentsObject.ArgumentsObject(fullArgs);
             if (!ScanArg.DisplayHelp)
             {
