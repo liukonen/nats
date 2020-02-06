@@ -1,21 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Data.OleDb;
 
 namespace NATS.SearchTypes
 {
-    class WindowsSearchIndex :Searchbase
+    class WindowsSearchIndex : IndexBase
     {
-        const string DBConnection = "Provider=Search.CollatorDSO.1;Extended? Properties = 'Application=Windows';";
-        const string Proc = "SELECT System.ItemPathDisplay FROM SYSTEMINDEX WHERE scope='{0}' and FREETEXT('%{1}%')";// and contains('%{Arguments.KeywordSearch}%')";
+        const string Proc = "SELECT System.ItemPathDisplay FROM SYSTEMINDEX WHERE scope='{0}' and FREETEXT('%{1}%')";
         public WindowsSearchIndex(ArgumentsObject.ArgumentsObject O) : base(O) { }
 
         public override void Execute()
         {
-            System.Text.StringBuilder SB = new StringBuilder();
+            StringBuilder SB = new StringBuilder();
             string query = string.Format(Proc, Arguments.DirectoryPath, Arguments.KeywordSearch); 
-            using (OleDbConnection objConnection = new OleDbConnection(DBConnection))
+            using (OleDbConnection objConnection = new OleDbConnection(Properties.Resources.WinIndexConnection))
             {
                 objConnection.Open();
                 OleDbCommand cmd = new OleDbCommand(query, objConnection);
@@ -23,10 +21,21 @@ namespace NATS.SearchTypes
                 DS.Load(cmd.ExecuteReader());
                 using (OleDbDataReader dataReader = cmd.ExecuteReader())
                 {
-                    while (dataReader.Read()){SB.Append(dataReader[0]).Append(Environment.NewLine);}
+                    while (dataReader.Read())
+                    {
+                        string responseItem = (string)dataReader[0];
+                        if (CheckFileExt(responseItem)) { SB.Append(responseItem).Append(Environment.NewLine); }
+                    }
                 }
+                objConnection.Close();
             }
             output = SB.ToString();
         }
     }
-}
+}//Optional from internet, but the one I have seams to work,
+/*"SELECT System.ItemPathDisplay 
+ * FROM SYSTEMINDEX 
+ * WHERE scope='{0}'
+ * and FREETEXT('%{1}%') 
+ * and contains('%{Arguments.KeywordSearch}%'"
+ * */

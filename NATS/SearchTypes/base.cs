@@ -8,6 +8,7 @@ namespace NATS.SearchTypes
 {
     public class Searchbase
     {
+   
         protected string output = string.Empty;
 
         protected ArgumentsObject.ArgumentsObject Arguments;

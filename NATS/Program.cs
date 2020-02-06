@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using NATS.ArgumentsObject;
-using NATS.Filters;
-using System.Collections.Concurrent;
 using NATS.Properties;
 
 namespace NATS
@@ -20,7 +15,6 @@ namespace NATS
             StringBuilder FilesFound = new StringBuilder();
             string fullArgs = ArgsToArg(args);
 
-            fullArgs = @"-p c:\users\liuko\source -k luke -I";
             ArgumentsObject.ArgumentsObject ScanArg = new ArgumentsObject.ArgumentsObject(fullArgs);
             if (!ScanArg.DisplayHelp)
             {
@@ -28,37 +22,11 @@ namespace NATS
                     Resources.Seperator, ScanArg.DirectoryPath, Environment.NewLine, "start timestamp:", GetDateTime(), Environment.NewLine, Resources.Line, Environment.NewLine);
 
                 Console.WriteLine(consoleOutput);
-
                 IEnumerable<FileInfo> Files = (new DirectoryInfo(ScanArg.DirectoryPath)).EnumerateFiles("*", ScanArg.EOptions);
-
-
-                SearchTypes.Searchbase Search;
-
-                switch (ScanArg.SearchType)
-                {
-
-                    case ArgumentsObject.ArgumentsObject.eSearchType.Threaded:
-                        Search = new SearchTypes.MultiThread(ScanArg); break;
-                    case ArgumentsObject.ArgumentsObject.eSearchType.WindowsIndex: 
-                        Search = new SearchTypes.WindowsSearchIndex(ScanArg);
-                        break;
-                    case ArgumentsObject.ArgumentsObject.eSearchType.IndexGenerate:
-                        Search = new SearchTypes.InternalIndexGenerate(ScanArg);
-                        break;
-                    case ArgumentsObject.ArgumentsObject.eSearchType.LocalIndex:
-                        Search = new SearchTypes.InternalIndex(ScanArg);
-                        break;
-                    case ArgumentsObject.ArgumentsObject.eSearchType.indexgenerateandsearch:
-                        Search = new SearchTypes.InternalGenerateAndIndex(ScanArg);
-                        break;
-                    default:
-                        Search = new SearchTypes.SingleThread(ScanArg); break;
-                }
+                SearchTypes.Searchbase Search = LookupSearchBase(ScanArg);
                 Search.Execute();
                 FilesFound.Append(Search.ToString());
-
-
-                FilesFound.Append(Resources.Fin + Environment.NewLine + "End timestamp:" + GetDateTime()) ;
+                FilesFound.Append(Environment.NewLine).Append(Resources.Fin).Append(Environment.NewLine).Append("End timestamp:").Append(GetDateTime()) ;
 
                 if (!string.IsNullOrWhiteSpace(ScanArg.FileNameOutput))
                 {
@@ -68,7 +36,7 @@ namespace NATS
                 else { Console.WriteLine(FilesFound.ToString()); }
 
             }
-            else { Console.WriteLine(NATS.Properties.Resources.Help); }
+            else { Console.WriteLine(Resources.Help); }
         }
 
         static string GetDateTime() { return string.Concat(DateTime.Now.ToShortDateString(), " ", DateTime.Now.ToString("HH:mm:ss fff")); }
@@ -76,6 +44,24 @@ namespace NATS
         static string ArgsToArg(string[] args)
         { return string.Join(' ', args); }
 
-       
+        private static SearchTypes.Searchbase LookupSearchBase(ArgumentsObject.ArgumentsObject arguments)
+        {
+            switch (arguments.SearchType)
+            {
+                case ArgumentsObject.ArgumentsObject.eSearchType.Threaded:
+                    return new SearchTypes.MultiThread(arguments);
+                case ArgumentsObject.ArgumentsObject.eSearchType.LocalIndex:
+                    return new SearchTypes.InternalIndex(arguments);
+                case ArgumentsObject.ArgumentsObject.eSearchType.WindowsIndex:
+                    return new SearchTypes.WindowsSearchIndex(arguments);
+                case ArgumentsObject.ArgumentsObject.eSearchType.IndexGenerate:
+                    return new SearchTypes.InternalIndexGenerate(arguments);
+                case ArgumentsObject.ArgumentsObject.eSearchType.indexgenerateandsearch:
+                    return new SearchTypes.InternalGenerateAndIndex(arguments);
+                default:
+                    return new SearchTypes.SingleThread(arguments);
+            }
+        }
+
     }
 }

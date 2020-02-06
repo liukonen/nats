@@ -128,6 +128,9 @@
   <data name="Help" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Help.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="InternalIndexConnection" xml:space="preserve">
+    <value>Data Source=nats.db;Version=3;</value>
+  </data>
   <data name="Line" xml:space="preserve">
     <value>-----------------------------------------------------------------</value>
   </data>
@@ -136,5 +139,8 @@
   </data>
   <data name="Seperator" xml:space="preserve">
     <value> - </value>
+  </data>
+  <data name="WinIndexConnection" xml:space="preserve">
+    <value>Provider=Search.CollatorDSO.1;Extended? Properties = 'Application=Windows';</value>
   </data>
 </root>

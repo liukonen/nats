@@ -7,33 +7,43 @@ namespace NATS.Filters
 {
     public class SmartSearchFilter : FileInfoFilters
     {
+        #region Global Vars
         private List<byte[]> knownEncodings;
+        #endregion
 
-        private static List<byte[]> GetEncodings()
-        {
-            var X = System.Text.Encoding.GetEncodings();
-            List<byte[]> EncodePre = new List<byte[]>();
+        #region Public
 
-            foreach (var Y in X)
-            {
-                byte[] pre = Y.GetEncoding().GetPreamble();
-                if (pre.Length > 0) { EncodePre.Add(pre); }
-            }
-            return EncodePre;
-        }
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public SmartSearchFilter()
         {
             knownEncodings = GetEncodings();
         }
-
+        
+        /// <summary>
+        /// Uses Byte Order Marker to see if the file is a text file
+        /// </summary>
+        /// <param name="FileInfo"></param>
+        /// <returns></returns>
         public override bool IsValid(FileInfo FileInfo)
         {
+            ///Using 4096 [default sector size] as an initial size
             int FileSize = (FileInfo.Length > 4096) ? 4096 : (int)FileInfo.Length;
             if (FileSize == 0) { return false; }
             return IsText(FileInfo, 4096);
         }
 
+        #endregion
+
+        #region Private
+
+        /// <summary>
+        /// Attemps to grab the first [size] number of bytes of the File, to check its Byte order Marker
+        /// </summary>
+        /// <param name="File"></param>
+        /// <param name="size"></param>
+        /// <returns></returns>
         private Boolean IsText(FileInfo File, int size)
         {
             byte[] bytes = new byte[size];
@@ -46,6 +56,12 @@ namespace NATS.Filters
             return DataStartsWithBom(bytes, knownEncodings);
         }
 
+        /// <summary>
+        /// Checks if the start of the Data Stream starts with the Byte order mark 
+        /// </summary>
+        /// <param name="data">Data to check</param>
+        /// <param name="knownEncodings">list of known Byte order marks</param>
+        /// <returns></returns>
         private bool DataStartsWithBom(byte[] data, List<byte[]> knownEncodings)
         {
             foreach (byte[] bom in knownEncodings)
@@ -55,6 +71,22 @@ namespace NATS.Filters
             return false;
         }
 
-    }
+        /// <summary>
+        /// Grabs the list of known text encodings
+        /// </summary>
+        /// <returns></returns>
+        private static List<byte[]> GetEncodings()
+        {
+            var encodings = System.Text.Encoding.GetEncodings();
+            List<byte[]> EncodePre = new List<byte[]>();
 
+            foreach (var encoding in encodings)
+            {
+                byte[] pre = encoding.GetEncoding().GetPreamble();
+                if (pre.Length > 0) { EncodePre.Add(pre); }
+            }
+            return EncodePre;
+        }
+        #endregion
+    }
 }
