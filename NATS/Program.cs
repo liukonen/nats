@@ -14,7 +14,6 @@ namespace NATS
             string consoleOutput;
             StringBuilder FilesFound = new StringBuilder();
             string fullArgs = ArgsToArg(args);
-
             ArgumentsObject.ArgumentsObject ScanArg = new ArgumentsObject.ArgumentsObject(fullArgs);
             if (!ScanArg.DisplayHelp)
             {

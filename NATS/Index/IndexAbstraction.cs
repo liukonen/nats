@@ -1,13 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+
 
 namespace NATS.Index
 {
+
+    public struct FileObjects
+    {
+        public long FileIndex;
+        public DateTime LastModified;
+        public FileObjects(long fileIndex, DateTime lastModified)
+        {
+            FileIndex = fileIndex; LastModified = lastModified;
+        }
+    }
+
     public class FileAbstraction
     {
         #region Global Var
-        Dictionary<string, Tuple<Int64, DateTime>> Collection = new Dictionary<string, Tuple<long, DateTime>>();
+        Dictionary<string, FileObjects> Collection = new Dictionary<string, FileObjects>();
         sqlLiteDataAccess Access = sqlLiteDataAccess.Instance();
+
+        string searchDictionary;
+        System.Collections.Concurrent.ConcurrentDictionary<string, DateTime> ItemsToInsert = new System.Collections.Concurrent.ConcurrentDictionary<string, DateTime>();
+        System.Collections.Concurrent.ConcurrentDictionary<string, DateTime> ItemsToUpdate = new System.Collections.Concurrent.ConcurrentDictionary<string, DateTime>();
+
+        //System.Collections.Concurrent.ConcurrentDictionary<string, List<KeywordObject>> LookupItem = new System.Collections.Concurrent.ConcurrentDictionary<string, List<KeywordObject>>();
+        System.Collections.Concurrent.ConcurrentDictionary<string, List<KeywordObject>> ItemsToAdd = new System.Collections.Concurrent.ConcurrentDictionary<string, List<KeywordObject>>();
+        System.Collections.Concurrent.ConcurrentDictionary<string, List<KeywordObject>> ItemsToRemove = new System.Collections.Concurrent.ConcurrentDictionary<string, List<KeywordObject>>();
+
 
         #endregion
 
@@ -19,11 +41,18 @@ namespace NATS.Index
         /// <param name="SearchDirectory"></param>
         public FileAbstraction(string SearchDirectory)
         {
-            List<Tuple<Int64, string, DateTime>> Existing = Access.SelectFiles(SearchDirectory);
+            searchDictionary = SearchDirectory;
+            RefreshCollection();
+        }
+
+        private void RefreshCollection()
+        {
+            Collection.Clear();
+            List<Tuple<Int64, string, DateTime>> Existing = Access.SelectFiles(searchDictionary);
             foreach (var record in Existing)
             {
-                Collection.Add(record.Item2, new Tuple<long, DateTime>(record.Item1, record.Item3));
-            }        
+                Collection.Add(record.Item2, new FileObjects(record.Item1, record.Item3));
+            }
         }
 
         /// <summary>
@@ -37,28 +66,58 @@ namespace NATS.Index
 
             if (Collection.ContainsKey(FileName))
             {
-                if (Collection[FileName].Item2 >= DateTimeWithoutMiliseconds(LastUpdated)) { return false; }
+                
+                if (Collection[FileName].LastModified >= DateTimeWithoutMiliseconds(LastUpdated)) { return false; }
+                else { ItemsToUpdate.TryAdd(FileName, LastUpdated); }
             }
             else
             {
-                DateTime MinDate = new DateTime(1970, 1, 1);
-                Access.InsertFileRecord(FileName, MinDate);
-                Int64 Index = Access.LookupFileIndex(FileName);
-                Collection.Add(FileName, new Tuple<long, DateTime>(Index, MinDate));
+                ItemsToInsert.TryAdd(FileName, LastUpdated);
 
-            }//Create a new record right away
+            }
             return true;
         }
 
-        /// <summary>
-        /// Updates Files Last Modified Date in the DB
-        /// </summary>
-        /// <param name="FileName">File To Update</param>
-        /// <param name="LastModifed">Date To change to</param>
-        public void UpdateLastModified(string FileName, DateTime LastModifed)
+
+        public void AddLookups(string fileName, List<KeywordObject> KeywordIndexes)
         {
-            Access.UpdateFileRecord(FileName, DateTimeWithoutMiliseconds(LastModifed));
+            List<KeywordObject> existing = Access.GetExistingSavedItems(fileName);
+            List<KeywordObject> toAdd = new List<KeywordObject>();
+            List<KeywordObject> toRemove = new List<KeywordObject>();
+
+            toRemove.AddRange(from KeywordObject A in existing where !KeywordIndexes.Contains(A) select A);
+            toAdd.AddRange(from KeywordObject a in KeywordIndexes where !existing.Contains(a) select a);
+            ItemsToAdd.TryAdd(fileName, toAdd);
+            ItemsToRemove.TryAdd(fileName, toRemove);
+           
         }
+
+        public void SaveToDatabase()
+        {
+
+            Access.BulkFileInsert(ItemsToInsert.ToArray());
+            Access.BulkFileUpdate(ItemsToUpdate.ToArray());
+            RefreshCollection();
+            Access.BulkDeleteLookups(GenerateLookups(ItemsToRemove.ToArray()));
+            Access.BuldInsertLookups(GenerateLookups(ItemsToAdd.ToArray()));
+        }
+
+        public List<Lookup> GenerateLookups(KeyValuePair<string, List<KeywordObject>>[] Items)
+        {
+            List<Lookup> response = new List<Lookup>();
+            foreach (var item in Items)
+            {
+                long FileIndex = Collection[item.Key].FileIndex;
+
+                foreach (KeywordObject keywordItem in item.Value)
+                {
+                    response.Add(new Lookup(keywordItem.Hash, keywordItem.Collision, FileIndex));
+                }
+            }
+            return response;
+        }
+
+
 
         /// <summary>
         /// Returns the File Index Value used in the Database
@@ -67,7 +126,7 @@ namespace NATS.Index
         /// <returns></returns>
         public Int64 FileIndex(string FileName)
         { 
-         return Collection[FileName].Item1;         
+         return Collection[FileName].FileIndex;         
         }
         
         #endregion

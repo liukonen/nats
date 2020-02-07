@@ -4,9 +4,15 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NATS.Index
 {
+
+
+
+
     class SQLiteIndex : IDisposable
     {
         #region Global Vars
@@ -44,21 +50,23 @@ namespace NATS.Index
             List<string> items = new List<string>();
             Boolean HasRunOnce = false;
 
-            foreach (string keyword in keywords)
-            {
-                if (!HasRunOnce)
-                {
-                    HasRunOnce = true;
-                    items = Access.InquireOnDB(keyword, DirectoryPath);
-                }
-                else
-                {
-                    List<string> ItemsToMergeOn = Access.InquireOnDB(keyword, DirectoryPath);
-                    List<string> StillValid = (from string MergeItem in ItemsToMergeOn where items.Contains(MergeItem) select MergeItem).ToList();
-                    items = StillValid;
-                }
+            //foreach (string keyword in keywords)
+            //{
+            //    if (!HasRunOnce)
+            //    {
+            //        HasRunOnce = true;
+            //        items = Access.InquireOnDB(keyword, DirectoryPath);
+            //    }
+            //    else
+            //    {
+            //        List<string> ItemsToMergeOn = Access.InquireOnDB(keyword, DirectoryPath);
+            //        List<string> StillValid = (from string MergeItem in ItemsToMergeOn where items.Contains(MergeItem) select MergeItem).ToList();
+            //        items = StillValid;
+            //    }
 
-            }
+            //}
+
+            items = Access.InquireOnDb(keywords, DirectoryPath);
             if (keywords.Count() > 1)
             {
 
@@ -85,34 +93,48 @@ namespace NATS.Index
             long LookupSave, fileparse;
 
             FileAbstraction FilesAb = new FileAbstraction(path);
-            KeywordAbstraction KeywordsAb = new KeywordAbstraction();
+           // KeywordAbstraction KeywordsAb = new KeywordAbstraction();
+            EnumerationOptions Options = new EnumerationOptions { IgnoreInaccessible = true, RecurseSubdirectories = true, ReturnSpecialDirectories = false };
+            Filters.SmartSearchFilter Filter = new Filters.SmartSearchFilter();
+            KeywordCache Kc = KeywordCache.Instance();
+            IEnumerable<FileInfo> Files = (new DirectoryInfo(path)).EnumerateFiles("*", Options);
+            ParallelOptions options = new ParallelOptions() { MaxDegreeOfParallelism = 4 };
+
             fileparse = Stopwatch.ElapsedMilliseconds; Stopwatch.Restart();
             Debug("Load Time Abstraction: " + fileparse.ToString(), debug);
 
+            Stopwatch.Restart();
 
-            EnumerationOptions Options = new EnumerationOptions { IgnoreInaccessible = true, RecurseSubdirectories = true, ReturnSpecialDirectories = false };
-
-            Filters.SmartSearchFilter Filter = new Filters.SmartSearchFilter();
-
-            IEnumerable<FileInfo> Files = (new DirectoryInfo(path)).EnumerateFiles("*", Options);
-            foreach (FileInfo item in Files)
+            Parallel.ForEach(Files, options, (item) =>
             {
+
+                //foreach (FileInfo item in Files)
+            //{
                 if (StaticDynamicReadFile(item, Filter) && FilesAb.NeedsUpdating(item.FullName, item.LastWriteTime))
                 {
                     Debug("Processing: " + item.FullName, debug);
-                    Stopwatch.Restart();
+                    
 
-                    System.Collections.Concurrent.BlockingCollection<string> tsKeywords = new System.Collections.Concurrent.BlockingCollection<string>();
-
+                    
                     List<string> Keywords = ProcessString(File.ReadAllText(item.FullName));
                     fileparse = Stopwatch.ElapsedMilliseconds; Stopwatch.Restart();
-                    KeywordsAb.LoadFileKeywords(Keywords, FilesAb.FileIndex(item.FullName));
-                    FilesAb.UpdateLastModified(item.FullName, item.LastWriteTime);
+
+                    var Items = Kc.AddKeywords(Keywords);
+                    FilesAb.AddLookups(item.FullName, Items);
+                    //KeywordsAb.LoadFileKeywords(Keywords, FilesAb.FileIndex(item.FullName));
+                    //FilesAb.UpdateLastModified(item.FullName, item.LastWriteTime);
                     LookupSave = Stopwatch.ElapsedMilliseconds;
-                    Debug($"Process Time: {fileparse.ToString()}ms Database time: {LookupSave.ToString()}ms", debug);
-                    TotalFileProcess += fileparse; TotalLookupSave += LookupSave;
+                    
+                    //Debug($"Process Time: {fileparse.ToString()}ms Database time: {LookupSave.ToString()}ms", debug);
+                    //TotalFileProcess += fileparse; TotalLookupSave += LookupSave;
                 }
-            }
+
+            });
+            TotalFileProcess += Stopwatch.ElapsedMilliseconds;  Stopwatch.Reset();
+           // }
+            Kc.SaveToDb();
+            FilesAb.SaveToDatabase();
+            TotalLookupSave = Stopwatch.ElapsedMilliseconds;
             Debug($"TOTALS - Parse time: {TotalFileProcess.ToString()}, DB Save: {TotalLookupSave.ToString()}", debug);
             Stopwatch.Stop();
         }

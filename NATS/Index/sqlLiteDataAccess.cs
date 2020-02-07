@@ -54,11 +54,44 @@ namespace NATS.Index
             return response;
         }
 
-        /// <summary>
-        /// Returns All Existing Keywords from the DB
-        /// </summary>
-        /// <returns>a Dictionary of <KeywordString, Tuple<Keywordhash / CollisionID></Keyword></returns>
-        public Dictionary<string, Tuple<long, long>> LookupAllKeywords()
+        public List<string> InquireOnDb(string[] keyword, string directoryPath)
+        {
+            string proc = "SELECT DISTINCT Files.FileName FROM Keywords INNER JOIN Lookup on Lookup.KeywordHash = Keywords.Hash AND Keywords.CollisionIndex = Lookup.CollisionIndex INNER JOIN Files ON Files.FileIndex = Lookup.FileIndex WHERE Files.FileName like'{0}%' AND Keywords.Text like ('%{1}%');";
+
+            List<string> response = new List<string>();
+            Boolean run = false;
+
+            using (SQLiteTransaction Trans = connection.BeginTransaction())
+            using (SQLiteCommand com = connection.CreateCommand())
+            {
+                com.Transaction = Trans;
+
+                foreach (var item in keyword)
+                {
+                    List<string> specificFiles = new List<string>();
+                    com.CommandText = string.Format(proc, directoryPath, item);
+
+                    using (IDataReader reader = com.ExecuteReader()) { while (reader.Read()) { specificFiles.Add((string)reader[0]); } }
+                    if (!run)
+                    {
+                        run = true; response = specificFiles;
+                    }
+                    else 
+                    {
+                        response = (from string S in specificFiles where response.Contains(S) select S).ToList();
+                    }
+                    if (response.Count == 0) { break; }
+
+                }
+             }
+            return response;
+        }
+
+            /// <summary>
+            /// Returns All Existing Keywords from the DB
+            /// </summary>
+            /// <returns>a Dictionary of <KeywordString, Tuple<Keywordhash / CollisionID></Keyword></returns>
+            public Dictionary<string, Tuple<long, long>> LookupAllKeywords()
         {
             Dictionary<string, Tuple<long, long>> returnValue = new Dictionary<string, Tuple<long, long>>();
             using (SQLiteCommand com = connection.CreateCommand())
@@ -98,6 +131,26 @@ namespace NATS.Index
             }
             ExecuteNonQuery($"UPDATE Collision Set CurrentIndex = {(Item + 1)}");
             return Item;
+        }
+
+        public long GetCurrentCollision()
+        {
+            long response = 0;
+            using (SQLiteCommand com = connection.CreateCommand())
+            using (SQLiteTransaction Trans = connection.BeginTransaction())
+            {
+                com.Transaction = Trans;
+                com.CommandType = CommandType.Text;
+                com.CommandText = "Select CurrentIndex FROM Collision;";
+                response = (long)com.ExecuteScalar();
+            }
+            return response;
+        }
+
+        public void SaveCollision(long CurrentCollision)
+        {
+            ExecuteNonQuery($"Update Collision SET CurrentIndex = {CurrentCollision};");
+
         }
 
         #endregion
@@ -172,6 +225,57 @@ namespace NATS.Index
         #region Public File Table Specific Functions
         //Table Files  - FileIndex (INT) FileName (TEXT) LastUpdated (INT {converted to datetime})
 
+
+        public void BulkFileInsert(KeyValuePair<string, DateTime>[] Items)
+        {
+
+            const string starter = "INSERT INTO Files (FileName, LastUpdated) VALUES ";
+            int index = 0;
+            StringBuilder ssb = new StringBuilder();
+            foreach (KeyValuePair<string, DateTime> item in Items)
+            {
+                if (index == 0)
+                {
+                    ssb.Append(starter);
+                }
+                ssb.Append($"('{SafeString(item.Key)}', {ToUnixDate(item.Value)} ),");
+                index += 1;
+                if (index == 1000)
+                {
+                    index = 0;
+                    int Length = ssb.Length;
+                    ssb = new StringBuilder(ssb.ToString().Substring(0, Length - 1));
+                    ssb.Append(";");
+                }
+            }
+            string response = ssb.ToString();
+            if (!string.IsNullOrWhiteSpace(response))
+            {
+                if (response.EndsWith(",")) { response = response.Substring(0, response.Length - 1); }
+                if (!response.EndsWith(";")) { response = response + ";"; }
+                ExecuteNonQuery(response);
+            }
+
+
+        }
+
+        public void BulkFileUpdate(KeyValuePair<string, DateTime>[] Items)
+        {
+            using (var Transaction = connection.BeginTransaction())
+            using (var com = connection.CreateCommand())
+            {
+
+                com.Transaction = Transaction;
+                foreach(KeyValuePair<string, DateTime> item in Items){
+                 
+                    com.CommandText = $"Update Files Set LastUpdated = {ToUnixDate(item.Value)} where FileName = '{SafeString(item.Key)}';";
+                    com.ExecuteNonQuery();
+                }
+                Transaction.Commit();
+
+            }
+        }
+
         /// <summary>
         /// Updates A File with the Timestamp
         /// </summary>
@@ -230,6 +334,7 @@ namespace NATS.Index
 
         #region Public Lookup Table Functions
         //Table Lookup : KeywordHash (int), CollisionIndex (int), FileIndex (int)
+       
 
         /// <summary>
         /// Grabs the Existing Keyword /Collision record for a file index
@@ -252,6 +357,74 @@ namespace NATS.Index
                 }
             }
             return response;
+        }
+
+     
+
+        public List<KeywordObject> GetExistingSavedItems(string FileName)
+        {
+            List<KeywordObject> response = new List<KeywordObject>();
+
+            using (SQLiteCommand com = connection.CreateCommand())
+            {
+                com.CommandType = CommandType.Text;
+                com.CommandText = $"select Lookup.KeywordHash, Lookup.CollisionIndex FROM Lookup INNER JOIN Files ON Files.FileIndex = Lookup.FileIndex WHERE Files.FileName = '{SafeString(FileName)}';";
+                using (IDataReader reader = com.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        response.Add(new KeywordObject((long)reader[0], (long)reader[1]));
+                    }
+
+                }
+            }
+            return response;
+        }
+
+
+        public void BuldInsertLookups(List<Lookup> InsertItems)
+        {
+            const string starter = "INSERT INTO Lookup (KeywordHash,CollisionIndex, FileIndex) VALUES ";
+            int index = 0;
+            StringBuilder ssb = new StringBuilder();
+            foreach (Lookup item in InsertItems)
+            {
+                if (index == 0)
+                {
+                    ssb.Append(starter);
+                }
+                ssb.Append($"({item.KeywordHash}, {item.CollisionIndex}, {item.FileIndex}),");
+                index += 1;
+                if (index == 1000)
+                {
+                    index = 0;
+                    int Length = ssb.Length;
+                    ssb = new StringBuilder(ssb.ToString().Substring(0, Length - 1));
+                    ssb.Append(";");
+                }
+            }
+            string response = ssb.ToString();
+            if (!string.IsNullOrWhiteSpace(response))
+            {
+                if (response.EndsWith(",")) { response = response.Substring(0, response.Length - 1); }
+                if (!response.EndsWith(";")) { response = response + ";"; }
+                ExecuteNonQuery(response);
+            }
+
+        }
+
+        public void BulkDeleteLookups(List<Lookup> RemoveItems)
+        {
+            const string DeleteStatement = "DELETE FROM Lookup WHERE KeywordHash = {0} AND CollisionIndex = {1} AND FileIndex = {2};";
+            if (RemoveItems.Count > 0)
+            {
+                StringBuilder DeleteString = new StringBuilder();
+                foreach (Lookup item in RemoveItems)
+                {
+                    DeleteString.Append(string.Format(DeleteStatement, item.KeywordHash, item.CollisionIndex, item.FileIndex));
+                }
+                ExecuteNonQuery(DeleteString.ToString());
+            }
         }
 
         /// <summary>
