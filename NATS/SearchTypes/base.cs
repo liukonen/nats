@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Linq;
 
@@ -8,7 +6,7 @@ namespace NATS.SearchTypes
 {
     public class Searchbase
     {
-   
+
         protected string output = string.Empty;
 
         protected ArgumentsObject.ArgumentsObject Arguments;
@@ -31,7 +29,7 @@ namespace NATS.SearchTypes
         }
 
         //MustOverride object
-        public  virtual void Execute() { throw new NotImplementedException(); }
+        public virtual void Execute() { throw new NotImplementedException(); }
 
     }
 }

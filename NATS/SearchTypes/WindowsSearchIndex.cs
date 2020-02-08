@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Text;
 using System.Data.OleDb;
+using System.Text;
 
 namespace NATS.SearchTypes
 {
@@ -12,7 +12,7 @@ namespace NATS.SearchTypes
         public override void Execute()
         {
             StringBuilder SB = new StringBuilder();
-            string query = string.Format(Proc, Arguments.DirectoryPath, Arguments.KeywordSearch); 
+            string query = string.Format(Proc, Arguments.DirectoryPath, Arguments.KeywordSearch);
             using (OleDbConnection objConnection = new OleDbConnection(Properties.Resources.WinIndexConnection))
             {
                 objConnection.Open();

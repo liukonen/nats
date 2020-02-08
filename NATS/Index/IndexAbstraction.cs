@@ -66,7 +66,7 @@ namespace NATS.Index
 
             if (Collection.ContainsKey(FileName))
             {
-                
+
                 if (Collection[FileName].LastModified >= DateTimeWithoutMiliseconds(LastUpdated)) { return false; }
                 else { ItemsToUpdate.TryAdd(FileName, LastUpdated); }
             }
@@ -89,7 +89,7 @@ namespace NATS.Index
             toAdd.AddRange(from KeywordObject a in KeywordIndexes where !existing.Contains(a) select a);
             ItemsToAdd.TryAdd(fileName, toAdd);
             ItemsToRemove.TryAdd(fileName, toRemove);
-           
+
         }
 
         public void SaveToDatabase()
@@ -125,10 +125,10 @@ namespace NATS.Index
         /// <param name="FileName">FileName to retreive</param>
         /// <returns></returns>
         public Int64 FileIndex(string FileName)
-        { 
-         return Collection[FileName].FileIndex;         
+        {
+            return Collection[FileName].FileIndex;
         }
-        
+
         #endregion
 
         #region Private Functions

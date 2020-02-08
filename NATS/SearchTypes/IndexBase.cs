@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NATS.SearchTypes
 {
@@ -21,7 +19,7 @@ namespace NATS.SearchTypes
         public Boolean CheckFileExt(string FileName)
         {
 
-            if (!HasFilter) { return true;}
+            if (!HasFilter) { return true; }
             return FileFilter.IsValid(new System.IO.FileInfo(FileName));
         }
 

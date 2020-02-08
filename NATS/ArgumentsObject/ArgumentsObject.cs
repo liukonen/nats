@@ -9,9 +9,9 @@ namespace NATS.ArgumentsObject
 
         private bool MultiLine = false;
         private bool MemoryLoad = false;
-        
+
         #endregion
-        
+
         #region Public Properties
         public enum eSearchType { Single, Threaded, WindowsIndex, LocalIndex, IndexGenerate, indexgenerateandsearch }
         public int ThreadCount;
@@ -44,9 +44,9 @@ namespace NATS.ArgumentsObject
             }
         }
         #endregion
-    
+
         #region Constructor
-  
+
         public ArgumentsObject(string arguments)
         {
             string ExtentionList = NATS.Filters.FileExtentionFilter.DefaultFileExtentions;
@@ -63,15 +63,15 @@ namespace NATS.ArgumentsObject
                     {
                         case "P": DirectoryPath = itemVal; break;
                         case "K": KeywordSearch = itemVal; break;
-                        
-                        case "T": 
+
+                        case "T":
                             if (!int.TryParse(itemVal, out ThreadCount))
                             { ThreadCount = 4; }
                             SearchType = eSearchType.Threaded;
                             break;
                         case "D": ExtentionList = itemVal; break;
-                        case "A": 
-                            ExtentionList = itemVal; FilterType = Filters.FileExtentionFilter.filterType.WhiteList; 
+                        case "A":
+                            ExtentionList = itemVal; FilterType = Filters.FileExtentionFilter.filterType.WhiteList;
                             break;
                         case "M": MultiLine = true; break;
                         case "H": DisplayHelp = true; break;
@@ -84,7 +84,7 @@ namespace NATS.ArgumentsObject
                         case "I": SearchType = eSearchType.indexgenerateandsearch; break;
                     }
                 }
-                
+
                 /* -ApprovedList (whitelist)
                  * -Build Index
                  * -DisapprovedList (BlackList)
@@ -99,7 +99,7 @@ namespace NATS.ArgumentsObject
                  * -SmartSearch
                  * -Threading
                  * -Windows index search*/
-       
+
             }
             if (String.IsNullOrWhiteSpace(KeywordSearch) || string.IsNullOrWhiteSpace(DirectoryPath)) { DisplayHelp = true; }
             FileInfoFilters.Add(new NATS.Filters.FileExtentionFilter(ExtentionList, FilterType));

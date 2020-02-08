@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
-using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace NATS.SearchTypes
 {
-    class MultiThread :Searchbase
+    class MultiThread : Searchbase
     {
         public MultiThread(ArgumentsObject.ArgumentsObject O) : base(O) { }
 

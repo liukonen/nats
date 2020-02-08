@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NATS.SearchTypes
+﻿namespace NATS.SearchTypes
 {
     class InternalIndexGenerate : Searchbase
     {

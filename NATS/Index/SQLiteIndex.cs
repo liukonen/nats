@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace NATS.Index
 {
-
-
-
 
     class SQLiteIndex : IDisposable
     {
@@ -27,7 +23,7 @@ namespace NATS.Index
         #endregion
 
         #region Public Functions
-        
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -48,23 +44,9 @@ namespace NATS.Index
             string[] keywords = splitKeywords(SearchString);
 
             List<string> items = new List<string>();
-            Boolean HasRunOnce = false;
+   
 
-            //foreach (string keyword in keywords)
-            //{
-            //    if (!HasRunOnce)
-            //    {
-            //        HasRunOnce = true;
-            //        items = Access.InquireOnDB(keyword, DirectoryPath);
-            //    }
-            //    else
-            //    {
-            //        List<string> ItemsToMergeOn = Access.InquireOnDB(keyword, DirectoryPath);
-            //        List<string> StillValid = (from string MergeItem in ItemsToMergeOn where items.Contains(MergeItem) select MergeItem).ToList();
-            //        items = StillValid;
-            //    }
 
-            //}
 
             items = Access.InquireOnDb(keywords, DirectoryPath);
             if (keywords.Count() > 1)
@@ -93,7 +75,7 @@ namespace NATS.Index
             long LookupSave, fileparse;
 
             FileAbstraction FilesAb = new FileAbstraction(path);
-           // KeywordAbstraction KeywordsAb = new KeywordAbstraction();
+            // KeywordAbstraction KeywordsAb = new KeywordAbstraction();
             EnumerationOptions Options = new EnumerationOptions { IgnoreInaccessible = true, RecurseSubdirectories = true, ReturnSpecialDirectories = false };
             Filters.SmartSearchFilter Filter = new Filters.SmartSearchFilter();
             KeywordCache Kc = KeywordCache.Instance();
@@ -103,35 +85,26 @@ namespace NATS.Index
             fileparse = Stopwatch.ElapsedMilliseconds; Stopwatch.Restart();
             Debug("Load Time Abstraction: " + fileparse.ToString(), debug);
 
-            Stopwatch.Restart();
-
             Parallel.ForEach(Files, options, (item) =>
             {
-
-                //foreach (FileInfo item in Files)
-            //{
                 if (StaticDynamicReadFile(item, Filter) && FilesAb.NeedsUpdating(item.FullName, item.LastWriteTime))
                 {
                     Debug("Processing: " + item.FullName, debug);
-                    
 
-                    
-                    List<string> Keywords = ProcessString(File.ReadAllText(item.FullName));
+                    List<string> Keywords = new List<string>();
+                    if (1048576 > item.Length)
+                    { Keywords = ProcessString(File.ReadAllText(item.FullName)); }
+                    else { Keywords = ProcessLargeString(item); }
+
                     fileparse = Stopwatch.ElapsedMilliseconds; Stopwatch.Restart();
 
                     var Items = Kc.AddKeywords(Keywords);
                     FilesAb.AddLookups(item.FullName, Items);
-                    //KeywordsAb.LoadFileKeywords(Keywords, FilesAb.FileIndex(item.FullName));
-                    //FilesAb.UpdateLastModified(item.FullName, item.LastWriteTime);
                     LookupSave = Stopwatch.ElapsedMilliseconds;
-                    
-                    //Debug($"Process Time: {fileparse.ToString()}ms Database time: {LookupSave.ToString()}ms", debug);
-                    //TotalFileProcess += fileparse; TotalLookupSave += LookupSave;
                 }
 
             });
-            TotalFileProcess += Stopwatch.ElapsedMilliseconds;  Stopwatch.Reset();
-           // }
+            TotalFileProcess = Stopwatch.ElapsedMilliseconds; Stopwatch.Reset();
             Kc.SaveToDb();
             FilesAb.SaveToDatabase();
             TotalLookupSave = Stopwatch.ElapsedMilliseconds;
@@ -177,7 +150,7 @@ namespace NATS.Index
             string Ext = item.Extension.ToLower();
             if (BlacklistFilter.Contains(Ext)) { return false; }
             if (WhiteListFilter.Contains(Ext)) { return true; }
-            return filter.IsValid(item);        
+            return filter.IsValid(item);
         }
 
         /// <summary>
@@ -187,7 +160,7 @@ namespace NATS.Index
         /// <returns>List of strings</returns>
         private string[] splitKeywords(string Item)
         {
-            return Item.Split(new Char[] { ',', '\\', '/', '<', '>', ':', '.', ';', ' ', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            return Item.Split(new Char[] { ',', '\\', '/', '<', '>', ':', '.', ';', ' ', '\r', '\n', '[', ']', '(', ')', '-', '?', '&', '|' }, StringSplitOptions.RemoveEmptyEntries);
 
         }
 
@@ -203,17 +176,40 @@ namespace NATS.Index
             string[] keywords = splitKeywords(Item);
 
 
-           // return (from String S in keywords where S.Length < 1000 select S.Trim().ToLowerInvariant()).Distinct().ToArray();
+            // return (from String S in keywords where S.Length < 1000 select S.Trim().ToLowerInvariant()).Distinct().ToArray();
             foreach (string keyword in keywords)
             {
                 string CleanKeyword = keyword.ToLowerInvariant().Trim();
-                if (CleanKeyword.Length < 1000 && !Item.Contains(CleanKeyword))//if its bigger, chances are its a binary we are going through by mistake
+                if (CleanKeyword.Length < 1000 && !response.Contains(CleanKeyword))//if its bigger, chances are its a binary we are going through by mistake
                 {
                     response.Add(CleanKeyword);
                 }
             }
             return response;
         }
+
+        private List<string> ProcessLargeString(FileInfo file)
+        {
+            HashSet<string> response = new HashSet<string>();
+            using (StreamReader FS = file.OpenText())
+            {
+                 string line = String.Empty;
+                while ((line = FS.ReadLine()) != null)
+                {
+                    string[] keywords = splitKeywords(line);
+                    foreach (string keyword in keywords)
+                    {
+                        string CleanKeyword = keyword.ToLowerInvariant().Trim();
+                        if (CleanKeyword.Length < 1000 && !response.Contains(CleanKeyword))
+                        {
+                            response.Add(CleanKeyword);
+                        }
+                    }
+                }
+            }
+            return response.ToList();
+        }
+
         void IDisposable.Dispose()
         {
             Access.Dispose();

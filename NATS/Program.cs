@@ -1,8 +1,8 @@
-﻿using System;
+﻿using NATS.Properties;
+using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
-using NATS.Properties;
+using System.Text;
 
 namespace NATS
 {
@@ -14,23 +14,26 @@ namespace NATS
             string consoleOutput;
             StringBuilder FilesFound = new StringBuilder();
             string fullArgs = ArgsToArg(args);
+
+            fullArgs = @"-P c:\users\liuko\source -K lll -B";
+
             ArgumentsObject.ArgumentsObject ScanArg = new ArgumentsObject.ArgumentsObject(fullArgs);
             if (!ScanArg.DisplayHelp)
             {
-                 consoleOutput = string.Concat(Resources.Name, Resources.Seperator, ScanArg.KeywordSearch, 
-                    Resources.Seperator, ScanArg.DirectoryPath, Environment.NewLine, "start timestamp:", GetDateTime(), Environment.NewLine, Resources.Line, Environment.NewLine);
+                consoleOutput = string.Concat(Resources.Name, Resources.Seperator, ScanArg.KeywordSearch,
+                   Resources.Seperator, ScanArg.DirectoryPath, Environment.NewLine, "start timestamp:", GetDateTime(), Environment.NewLine, Resources.Line, Environment.NewLine);
 
                 Console.WriteLine(consoleOutput);
                 IEnumerable<FileInfo> Files = (new DirectoryInfo(ScanArg.DirectoryPath)).EnumerateFiles("*", ScanArg.EOptions);
                 SearchTypes.Searchbase Search = LookupSearchBase(ScanArg);
                 Search.Execute();
                 FilesFound.Append(Search.ToString());
-                FilesFound.Append(Environment.NewLine).Append(Resources.Fin).Append(Environment.NewLine).Append("End timestamp:").Append(GetDateTime()) ;
+                FilesFound.Append(Environment.NewLine).Append(Resources.Fin).Append(Environment.NewLine).Append("End timestamp:").Append(GetDateTime());
 
                 if (!string.IsNullOrWhiteSpace(ScanArg.FileNameOutput))
                 {
                     System.IO.File.WriteAllText(ScanArg.FileNameOutput, consoleOutput + FilesFound.ToString());
-                    Console.WriteLine(Resources.Fin  + Environment.NewLine + "End timestamp:" + GetDateTime());
+                    Console.WriteLine(Resources.Fin + Environment.NewLine + "End timestamp:" + GetDateTime());
                 }
                 else { Console.WriteLine(FilesFound.ToString()); }
 

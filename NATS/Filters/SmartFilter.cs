@@ -20,7 +20,7 @@ namespace NATS.Filters
         {
             knownEncodings = GetEncodings();
         }
-        
+
         /// <summary>
         /// Uses Byte Order Marker to see if the file is a text file
         /// </summary>

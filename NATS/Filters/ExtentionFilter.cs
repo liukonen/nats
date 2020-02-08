@@ -27,7 +27,7 @@ namespace NATS.Filters
         {
             List<string> BlackListArray = new List<string>();
             if (BlackListVaraible == string.Empty && type == filterType.BlackList) { BlackListVaraible = NATS.Properties.Resources.DefaultBlacklist; }
-            
+
             foreach (string item in BlackListVaraible.Split('|'))
             {
                 string ext = item.ToLower();
