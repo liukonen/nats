@@ -94,7 +94,7 @@ namespace NATS.Index
 
         public void SaveToDb()
         {
-            Access.InsetKeywords(from KeyValuePair<string, KeywordObject> I in NewKeywords select new Tuple<string, long, long>(I.Key, I.Value.Hash, I.Value.Collision));
+            Access.InsetKeywords(NewKeywords);
             Access.SaveCollision(CurrentCollisionIndex);
         }
     }

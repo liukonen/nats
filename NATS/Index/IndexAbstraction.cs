@@ -47,12 +47,7 @@ namespace NATS.Index
 
         private void RefreshCollection()
         {
-            Collection.Clear();
-            List<Tuple<Int64, string, DateTime>> Existing = Access.SelectFiles(searchDictionary);
-            foreach (var record in Existing)
-            {
-                Collection.Add(record.Item2, new FileObjects(record.Item1, record.Item3));
-            }
+            Collection = Access.SelectFiles(searchDictionary);
         }
 
         /// <summary>
@@ -87,8 +82,8 @@ namespace NATS.Index
 
             toRemove.AddRange(from KeywordObject A in existing where !KeywordIndexes.Contains(A) select A);
             toAdd.AddRange(from KeywordObject a in KeywordIndexes where !existing.Contains(a) select a);
-            ItemsToAdd.TryAdd(fileName, toAdd);
-            ItemsToRemove.TryAdd(fileName, toRemove);
+            if (toAdd.Count > 0) { ItemsToAdd.TryAdd(fileName, toAdd); }
+            if (toRemove.Count> 0){ ItemsToRemove.TryAdd(fileName, toRemove); }
 
         }
 
@@ -105,7 +100,7 @@ namespace NATS.Index
         public List<Lookup> GenerateLookups(KeyValuePair<string, List<KeywordObject>>[] Items)
         {
             List<Lookup> response = new List<Lookup>();
-            foreach (var item in Items)
+            foreach (KeyValuePair<string, List<KeywordObject>> item in Items)
             {
                 long FileIndex = Collection[item.Key].FileIndex;
 

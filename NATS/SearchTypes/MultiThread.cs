@@ -19,7 +19,7 @@ namespace NATS.SearchTypes
             ParallelOptions Options = new ParallelOptions() { MaxDegreeOfParallelism = Arguments.ThreadCount };
             Parallel.ForEach(Files, Options, (currentFile) =>
             {
-                var response = CheckFile(currentFile, Arguments);
+                Tuple<bool, string> response = CheckFile(currentFile, Arguments);
                 if (response.Item1) { ReturnItems.Add(response.Item2); }
             });
             output = (string.Join(Environment.NewLine, from string X in ReturnItems select X));

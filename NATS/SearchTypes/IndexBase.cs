@@ -10,7 +10,7 @@ namespace NATS.SearchTypes
 
         public IndexBase(ArgumentsObject.ArgumentsObject o) : base(o)
         {
-            foreach (var item in Arguments.FileInfoFilters)
+            foreach (NATS.Filters.FileInfoFilters item in Arguments.FileInfoFilters)
             {
                 if (item is Filters.FileExtentionFilter) { FileFilter = (Filters.FileExtentionFilter)item; HasFilter = true; }
             }

@@ -42,7 +42,7 @@ namespace NATS.Index
             {
                 com.Transaction = Trans;
 
-                foreach (var item in keyword)
+                foreach (string item in keyword)
                 {
                     List<string> specificFiles = new List<string>();
                     com.CommandText = string.Format(proc, directoryPath, item);
@@ -166,8 +166,8 @@ namespace NATS.Index
         /// <param name="command"></param>
         private void ExecuteNonQuery(string command)
         {
-            using (var Transaction = connection.BeginTransaction())
-            using (var com = connection.CreateCommand())
+            using (SQLiteTransaction Transaction = connection.BeginTransaction())
+            using (SQLiteCommand com = connection.CreateCommand())
             {
 
                 com.Transaction = Transaction;
@@ -218,8 +218,8 @@ namespace NATS.Index
 
         public void BulkFileUpdate(KeyValuePair<string, DateTime>[] Items)
         {
-            using (var Transaction = connection.BeginTransaction())
-            using (var com = connection.CreateCommand())
+            using (SQLiteTransaction Transaction = connection.BeginTransaction())
+            using (SQLiteCommand com = connection.CreateCommand())
             {
 
                 com.Transaction = Transaction;
@@ -241,9 +241,9 @@ namespace NATS.Index
         /// </summary>
         /// <param name="StartDirectory"></param>
         /// <returns></returns>
-        public List<Tuple<Int64, string, DateTime>> SelectFiles(string StartDirectory)
+        public Dictionary<string, FileObjects> SelectFiles(string StartDirectory)
         {
-            List<Tuple<Int64, string, DateTime>> response = new List<Tuple<long, string, DateTime>>();
+            Dictionary<string, FileObjects> response = new Dictionary<string, FileObjects>();
             using (SQLiteCommand com = connection.CreateCommand())
             {
                 com.CommandText = $"Select FileIndex, FileName, LastUpdated From Files Where FileName like('{StartDirectory}%');";
@@ -251,7 +251,7 @@ namespace NATS.Index
                 {
                     while (reader.Read())
                     {
-                        response.Add(new Tuple<long, string, DateTime>((Int64)reader[0], (string)reader[1], FromUnixDate((long)reader[2])));
+                        response.Add((string)reader[1], new FileObjects((long)reader[0], FromUnixDate((long)reader[2])));
                     }
                 }
             }
@@ -338,17 +338,17 @@ namespace NATS.Index
         /// Inserts Records into the Keywords Table
         /// </summary>
         /// <param name="Keywords">List of (Keyword string, Generated Hashcode, CollisionId(default 0))</param>
-        public void InsetKeywords(IEnumerable<Tuple<string, long, long>> Keywords)
+        public void InsetKeywords(IEnumerable<KeyValuePair<string, KeywordObject>> Keywords)
         {
             const string starter = "INSERT INTO Keywords(Text,Hash,CollisionIndex) VALUES ";
             int index = 0;
             StringBuilder ssb = new StringBuilder();
 
-            foreach (Tuple<string, long, long> item in Keywords)
+            foreach (KeyValuePair<string, KeywordObject> item in Keywords)
             {
                 if (index == 0) { ssb.Append(starter); }
 
-                ssb.Append($"('{SafeString(item.Item1)}',{item.Item2},{item.Item3}),");
+                ssb.Append($"('{SafeString(item.Key)}',{item.Value.Hash},{item.Value.Collision}),");
                 index += 1;
                 if (index == 1000)
                 {
@@ -362,7 +362,6 @@ namespace NATS.Index
             if (response.EndsWith(",")) { response = response[0..^1]; }
             if (!response.EndsWith(";")) { response += ";"; }
             ExecuteNonQuery(response);
-
         }
         #endregion
 

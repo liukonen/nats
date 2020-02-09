@@ -15,8 +15,6 @@ namespace NATS.Index
 
         Dictionary<string, DateTime> _existingFiles = new Dictionary<string, DateTime>();
         Dictionary<string, Int64> KeywordsInDB = new Dictionary<string, Int64>();
-        long TotalLookupSave;
-        long TotalFileProcess;
         Stopwatch Stopwatch = new Stopwatch();
         private sqlLiteDataAccess Access = sqlLiteDataAccess.Instance();
 
@@ -53,7 +51,7 @@ namespace NATS.Index
             {
 
                 List<string> ValidatedResponse = new List<string>();
-                foreach (var item in items)
+                foreach (string item in items)
                 {
                     string TestString = File.ReadAllText(item);
                     if (TestString.Contains(SearchString)) { ValidatedResponse.Add(item); }
@@ -72,10 +70,9 @@ namespace NATS.Index
         public void Generate(string path, Boolean debug)
         {
             Stopwatch.Start();
-            long LookupSave, fileparse;
+            long  fileparse, TotalLookupSave, TotalFileProcess;
 
             FileAbstraction FilesAb = new FileAbstraction(path);
-            // KeywordAbstraction KeywordsAb = new KeywordAbstraction();
             EnumerationOptions Options = new EnumerationOptions { IgnoreInaccessible = true, RecurseSubdirectories = true, ReturnSpecialDirectories = false };
             Filters.SmartSearchFilter Filter = new Filters.SmartSearchFilter();
             KeywordCache Kc = KeywordCache.Instance();
@@ -84,27 +81,21 @@ namespace NATS.Index
 
             fileparse = Stopwatch.ElapsedMilliseconds; Stopwatch.Restart();
             Debug("Load Time Abstraction: " + fileparse.ToString(), debug);
-
             Parallel.ForEach(Files, options, (item) =>
             {
-                if (StaticDynamicReadFile(item, Filter) && FilesAb.NeedsUpdating(item.FullName, item.LastWriteTime))
+            if (StaticDynamicReadFile(item, Filter) && FilesAb.NeedsUpdating(item.FullName, item.LastWriteTime))
                 {
                     Debug("Processing: " + item.FullName, debug);
-
-                    List<string> Keywords = new List<string>();
-                    if (1048576 > item.Length)
-                    { Keywords = ProcessString(File.ReadAllText(item.FullName)); }
+                    HashSet<string> Keywords = new HashSet<string>();
+                    if (1048576 > item.Length){ Keywords = ProcessString(File.ReadAllText(item.FullName)); }
                     else { Keywords = ProcessLargeString(item); }
-
-                    fileparse = Stopwatch.ElapsedMilliseconds; Stopwatch.Restart();
-
-                    var Items = Kc.AddKeywords(Keywords);
+                    List<KeywordObject> Items = Kc.AddKeywords(Keywords);
                     FilesAb.AddLookups(item.FullName, Items);
-                    LookupSave = Stopwatch.ElapsedMilliseconds;
                 }
-
             });
-            TotalFileProcess = Stopwatch.ElapsedMilliseconds; Stopwatch.Reset();
+            TotalFileProcess = Stopwatch.ElapsedMilliseconds;
+            Debug("Files Parsed. Saving...", debug);
+            Stopwatch.Restart();
             Kc.SaveToDb();
             FilesAb.SaveToDatabase();
             TotalLookupSave = Stopwatch.ElapsedMilliseconds;
@@ -158,7 +149,7 @@ namespace NATS.Index
         /// </summary>
         /// <param name="Item">String to split</param>
         /// <returns>List of strings</returns>
-        private string[] splitKeywords(string Item)
+        private static string[] splitKeywords(string Item)
         {
             return Item.Split(new Char[] { ',', '\\', '/', '<', '>', ':', '.', ';', ' ', '\r', '\n', '[', ']', '(', ')', '-', '?', '&', '|' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -170,12 +161,10 @@ namespace NATS.Index
         /// </summary>
         /// <param name="Item"></param>
         /// <returns></returns>
-        private List<string> ProcessString(string Item)
+        private static HashSet<string> ProcessString(string Item)
         {
-            List<string> response = new List<string>();
+            HashSet<string> response = new HashSet<string>();
             string[] keywords = splitKeywords(Item);
-
-
             // return (from String S in keywords where S.Length < 1000 select S.Trim().ToLowerInvariant()).Distinct().ToArray();
             foreach (string keyword in keywords)
             {
@@ -188,7 +177,7 @@ namespace NATS.Index
             return response;
         }
 
-        private List<string> ProcessLargeString(FileInfo file)
+        private static HashSet<string> ProcessLargeString(FileInfo file)
         {
             HashSet<string> response = new HashSet<string>();
             using (StreamReader FS = file.OpenText())
@@ -207,7 +196,7 @@ namespace NATS.Index
                     }
                 }
             }
-            return response.ToList();
+            return response;
         }
 
         void IDisposable.Dispose()

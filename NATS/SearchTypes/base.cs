@@ -15,7 +15,7 @@ namespace NATS.SearchTypes
 
         public static Tuple<bool, string> CheckFile(FileInfo item, ArgumentsObject.ArgumentsObject args)
         {
-            var NotValid = (from NATS.Filters.FileInfoFilters F in args.FileInfoFilters where F.IsValid(item) == false select F).Any();
+            bool NotValid = (from NATS.Filters.FileInfoFilters F in args.FileInfoFilters where F.IsValid(item) == false select F).Any();
             if (!NotValid) //double negative... could word it better
             {
                 return args.Comparer.Compare(item, args.KeywordSearch);

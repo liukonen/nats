@@ -15,7 +15,7 @@ namespace NATS
             StringBuilder FilesFound = new StringBuilder();
             string fullArgs = ArgsToArg(args);
 
-            fullArgs = @"-P c:\users\liuko\source -K lll -B";
+            fullArgs = @"-P d:\newdocs -K luke -b";
 
             ArgumentsObject.ArgumentsObject ScanArg = new ArgumentsObject.ArgumentsObject(fullArgs);
             if (!ScanArg.DisplayHelp)
