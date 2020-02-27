@@ -34,3 +34,12 @@
 | -A [ext] | **Approved Extensions:** The reverse of the disapproved extension, which is disabled if -A is sent. Will only search files with the particular extension.|
 | -M       | **MultiLine:** By default NATS will only indicate if the file contains the selected keyword. Adding the M keyword on Single or Multi thread scan will indicate What lines in the file the keyword appears as well (Note: this search will take longer as it needs to read through the entire file for keywords)|
 | -H       | **Help:** Ignores all other Inputs and displays this help file|
+
+
+## Other
+|Design patterns or technologies explored|  
+|--|
+| - Singleton  |
+| - Factory Pattern|
+| - Parallel Library|
+| - Sqlite db |
