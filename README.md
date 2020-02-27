@@ -43,3 +43,4 @@
 | - Factory Pattern|
 | - Parallel Library|
 | - Sqlite db |
+| - String Hashing |
