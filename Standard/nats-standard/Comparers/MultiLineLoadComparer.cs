@@ -30,6 +30,7 @@ namespace NATS.Comparers
                         }
                     }
                 }
+                catch (System.UnauthorizedAccessException) { }
                 catch (System.IO.IOException) { }//Do nothing
                 return new Tuple<bool, string>(_hasItem, Items.ToString());
             }

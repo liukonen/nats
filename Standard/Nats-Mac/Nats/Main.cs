@@ -1,6 +1,6 @@
 ﻿using AppKit;
 
-namespace NatsMac
+namespace Nats
 {
     static class MainClass
     {

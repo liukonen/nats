@@ -20,6 +20,7 @@ namespace NATS.Comparers
                     }
                 }
             }
+            catch (System.UnauthorizedAccessException) { }
             catch (System.IO.IOException) { }//do nothing if its an IO exception
             return new Tuple<bool, string>(false, string.Empty);
         }
