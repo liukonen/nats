@@ -32,6 +32,9 @@ namespace Nats
 		[Outlet]
 		AppKit.NSMenuItem mnSmart_click { get; set; }
 
+		[Action ("help_click:")]
+		partial void help_click (Foundation.NSObject sender);
+
 		[Action ("mnIndex_click:")]
 		partial void mnIndex_click (Foundation.NSObject sender);
 
@@ -52,17 +55,15 @@ namespace Nats
 
 		[Action ("mnSmartSearch_click:")]
 		partial void mnSmartSearch_click (Foundation.NSObject sender);
+
+		[Action ("Save_click:")]
+		partial void Save_click (Foundation.NSObject sender);
 		
 		void ReleaseDesignerOutlets ()
 		{
-			if (mnSingleThread != null) {
-				mnSingleThread.Dispose ();
-				mnSingleThread = null;
-			}
-
-			if (mnMultiThread != null) {
-				mnMultiThread.Dispose ();
-				mnMultiThread = null;
+			if (mnIndexOnly != null) {
+				mnIndexOnly.Dispose ();
+				mnIndexOnly = null;
 			}
 
 			if (mnIndexWLoad != null) {
@@ -70,9 +71,14 @@ namespace Nats
 				mnIndexWLoad = null;
 			}
 
-			if (mnIndexOnly != null) {
-				mnIndexOnly.Dispose ();
-				mnIndexOnly = null;
+			if (mnMultiLine != null) {
+				mnMultiLine.Dispose ();
+				mnMultiLine = null;
+			}
+
+			if (mnMultiThread != null) {
+				mnMultiThread.Dispose ();
+				mnMultiThread = null;
 			}
 
 			if (mnRam != null) {
@@ -80,9 +86,9 @@ namespace Nats
 				mnRam = null;
 			}
 
-			if (mnMultiLine != null) {
-				mnMultiLine.Dispose ();
-				mnMultiLine = null;
+			if (mnSingleThread != null) {
+				mnSingleThread.Dispose ();
+				mnSingleThread = null;
 			}
 
 			if (mnSmart_click != null) {

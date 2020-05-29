@@ -17,8 +17,8 @@ namespace Nats
         public string Path = string.Empty;
 
         public System.ComponentModel.BackgroundWorker worker = new BackgroundWorker() { WorkerSupportsCancellation = true };
-        string results = string.Empty;
-        string keywords = string.Empty;
+        public string results = string.Empty;
+        public string keywords = string.Empty;
 
         #region Application Access
         public static AppDelegate App

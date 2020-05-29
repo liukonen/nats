@@ -16,6 +16,10 @@ namespace Nats
         public override void DidFinishLaunching(NSNotification notification)
         {
             NatsGui.Path = DirPicker();
+            //Disable items not working on first release
+            mnIndexOnly.Hidden = true;
+            mnIndexWLoad.Hidden = true;
+            mnSmart_click.Hidden = true;
             // Insert code here to initialize your application
         }
 
@@ -79,6 +83,31 @@ namespace Nats
             mnIndexWLoad.State = NSCellStateValue.On;
             NatsGui.SearchType = NATS.ArgumentsObject.ArgumentsObject.eSearchType.indexgenerateandsearch;
 
+        }
+
+        partial void Save_click(NSObject sender)
+        {
+            var dialog = new NSSavePanel()
+            {
+                Title = "Save results",
+                AllowedFileTypes = new string[] { "txt" },
+                AllowsOtherFileTypes = false,
+                ShowsTagField = false,
+                NameFieldStringValue = string.Concat(NatsGui.keywords, " ", System.DateTime.Now.ToString("yy-MM-dd-hh-mm-ss"), ".txt")
+            };
+            if(dialog.RunModal() == 1)
+            {
+                if (dialog.Url != null && !System.IO.File.Exists(dialog.Url.Path))
+                {
+                    System.IO.File.WriteAllText(dialog.Url.Path, NatsGui.results);
+                }
+                else { }
+            }
+
+        }
+        partial void help_click(NSObject sender)
+        {
+            (new NSAlert() { MessageText = "Help", InformativeText = nats_standard.Nats.Helpfile(), AlertStyle = NSAlertStyle.Informational }).RunModal();
         }
 
         [Export("openDocument:")]

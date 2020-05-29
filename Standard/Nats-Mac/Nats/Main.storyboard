@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -78,7 +77,7 @@
                                         </menuItem>
                                         <menuItem title="Save…" keyEquivalent="s" id="pxx-59-PXV">
                                             <connections>
-                                                <action selector="saveDocument:" target="Ady-hI-5gd" id="teZ-XB-qJY"/>
+                                                <action selector="Save_click:" target="Voe-Tx-rLC" id="VQe-ag-uZz"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Save As…" keyEquivalent="S" id="Bw7-FT-i3A">
@@ -126,13 +125,13 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Engine" id="A59-r5-ZDP">
                                     <items>
-                                        <menuItem title="Single Thread" state="on" id="BpI-Lh-7rw">
+                                        <menuItem title="Single Thread" id="BpI-Lh-7rw">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="mnSingleThread_click:" target="Voe-Tx-rLC" id="784-mm-GAF"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Multi Thread" id="4AQ-nK-1yf">
+                                        <menuItem title="Multi Thread" state="on" id="4AQ-nK-1yf">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="mnMultiThread_click:" target="Voe-Tx-rLC" id="Xfb-J6-k6B"/>
@@ -171,7 +170,7 @@
                                                 <action selector="mnSmartSearch_click:" target="Voe-Tx-rLC" id="tzd-Od-Ge8"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Load Items in Ram" id="tWR-TQ-86p">
+                                        <menuItem title="Load Items in Ram" state="on" id="tWR-TQ-86p">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="mnRam_Click:" target="Voe-Tx-rLC" id="rVf-k8-30w"/>
@@ -217,7 +216,7 @@
                                     <items>
                                         <menuItem title="Nats Help" keyEquivalent="?" id="FKE-Sm-Kum">
                                             <connections>
-                                                <action selector="showHelp:" target="Ady-hI-5gd" id="y7X-2Q-9no"/>
+                                                <action selector="help_click:" target="Voe-Tx-rLC" id="K4V-FD-kTN"/>
                                             </connections>
                                         </menuItem>
                                     </items>
@@ -249,7 +248,7 @@
         <scene sceneID="R2V-B0-nI4">
             <objects>
                 <windowController id="B8D-0N-5wS" sceneMemberID="viewController">
-                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
+                    <window key="window" title="Nats - Mac" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
                         <rect key="contentRect" x="196" y="240" width="480" height="270"/>
