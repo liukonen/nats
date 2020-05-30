@@ -1,0 +1,14 @@
+NATS is a basic plain text file scanner.
+
+Search Types------------------
+- Threading: Implements Multithreading Scanning. By default it is set to 4 threads.
+- Single:    Searchs your file system using only one thread.
+ 
+Options-----------------------
+- Smart Search (windows only): uses the byte order mark at the start of the file to assist in filtering out non text files. This process is not 100% accurate, however is set for index based search.
+
+- RAM: Loads files under 10MB into Ram for comparison. This in theory should reduce IO spikes on the System process on 
+-Disapproved Extensions (win only): Implements filtering of file extensions not to scan. 
+    *NAPS has a default blacklist of 7z,bmp,db,db-journal,dll,doc,docx,exe,jpg,m4v,mov,mp3,mp4,pdb,pdf,png,tmp,xls,xlsx,zip, 
+-Approved Extensions(win only): The reverse of the disapproved
+-MultiLine: By default NATS will only indicate if the file  contains the selected keyword. Adding the M keyword on Single or Multithread scan will indicate What lines in the file the keyword appears as well (Note: this search will take longer as it needs to read through the entire file for keywords)

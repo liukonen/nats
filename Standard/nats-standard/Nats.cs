@@ -15,6 +15,7 @@ namespace nats_standard
         {
             return Properties.Resources.HelpFile;
         }
+        public static string GUIHelpFile() { return Properties.Resources.GUIHelp; }
 
         public static string[] DefaultBlackList()
         {

@@ -80,6 +80,24 @@ namespace nats_standard.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to NATS is a basic plain text file scanner.
+        ///
+        ///Search Types------------------
+        ///- Threading: Implements Multithreading Scanning. By default it is set to 4 threads.
+        ///- Single:    Searchs your file system using only one thread.
+        /// 
+        ///Options-----------------------
+        ///- Smart Search (windows only): uses the byte order mark at the start of the file to assist in filtering out non text files. This process is not 100% accurate, however is set for index based search.
+        ///
+        ///- RAM: Loads files under 10MB into Ram for comparison [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string GUIHelp {
+            get {
+                return ResourceManager.GetString("GUIHelp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NATS is a basic plain text file scanner.
         /// Usage: NATS -P &lt;path&gt; -K &lt;keyword&gt; [Search Type] [options]
         ///
         /// Required Fields--------------------------------------------------------------
