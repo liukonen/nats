@@ -8,6 +8,7 @@
 - [System.Data.OLEDB](https://github.com/dotnet/corefx) - [MIT](https://licenses.nuget.org/MIT), Copyright Microsoft Corp - For use in Windows Index Scan
 - [System.Data.Sqllite.Core](https://system.data.sqlite.org/index.html/doc/trunk/www/index.wiki) [-Public Domain](https://www.sqlite.org/copyright.html), D. Richard Hipp - Used for NATS Index Backend Database 
 - [Farmhash.Sharp](https://nickbabcock.github.io/Farmhash.Sharp/) - [MIT](https://github.com/nickbabcock/Farmhash.Sharp/blob/master/LICENSE.txt),  Copyright (c) 2015 Nick Babcock - Copyright (c) 2014 Google, Inc. For use in generating hash values for Indexes
+- [Material.IO Apache License]("https://www.apache.org/licenses/LICENSE-2.0.html") - Icon for mac and windows provided by material.io, and is Apache license version 2.0
 
  ## Required Fields
  -K [keyword]    Keyword text to search for
@@ -44,3 +45,8 @@
 | - Parallel Library|
 | - Sqlite db |
 | - String Hashing |
+|- Cocoa (Mac OS) Development|
+|- XCode |
+|- GTK#|
+|- .Net Standard|
+|- Cross Platform Development|
