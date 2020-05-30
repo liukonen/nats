@@ -58,5 +58,11 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\nats-standard\nats-standard.csproj">
+      <Project>{FEAFA6A9-91B1-44A0-ABC5-0BC479637119}</Project>
+      <Name>nats-standard</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
