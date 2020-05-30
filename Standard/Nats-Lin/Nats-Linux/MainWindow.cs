@@ -3,12 +3,14 @@ using Gtk;
 using System.ComponentModel;
 public partial class MainWindow : Gtk.Window
 {
-
+    #region Globals
     string path = string.Empty;
     string results = string.Empty;
     NATS.ArgumentsObject.ArgumentsObject arguments = null;
-   
     public BackgroundWorker worker = new BackgroundWorker() { WorkerSupportsCancellation = true };
+    #endregion
+
+    #region Form Load
 
     public MainWindow() : base(Gtk.WindowType.Toplevel)
     {
@@ -27,126 +29,18 @@ public partial class MainWindow : Gtk.Window
 
     }
 
-    private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-    {
-    textview1.Buffer.Text = results;
-        entry1.Visible = true;
-        button1.Label = "Search";
+    #endregion
 
-        if (e.Error == null)
-        {
-            this.Title = "Nats- Done -" + path;
-        }
-        else
-        {
-            textview1.Buffer.Text = e.Error.Message;
-        }
+    #region Menu Events
 
-    }
-
-    private void Worker_DoWork(object sender, DoWorkEventArgs e)
-    {
-
-        nats_standard.Nats nats = new nats_standard.Nats();
-        results = nats.OldSearch(arguments);
-
-    }
-
-
-    void msgbox(string title, string message)
-    {
-        Dialog dialog = null;
-        try
-        {
-            dialog = new Dialog(title, this,
-            DialogFlags.DestroyWithParent | DialogFlags.Modal,
-            ResponseType.Ok);
-            dialog.AddButton("ok", ResponseType.Ok);
-            dialog.VBox.Add(new Label(message));
-            dialog.ShowAll();
-            dialog.Run();
-        }
-        finally
-        {
-            if (dialog != null)
-                dialog.Destroy();
-        }
-    }
-
-    protected void searchClick(object sender, EventArgs e)
-    {
-        if (worker.IsBusy)
-        {
-            worker.CancelAsync();
-            button1.Label = "Search";
-            entry1.Visible = true;
-        }
-        else
-        {
-            entry1.Visible = false;
-            bool useSmartSearch = false;
-            NATS.Filters.FileExtentionFilter.filterType filter = NATS.Filters.FileExtentionFilter.filterType.BlackList;
-            string blacklist = string.Join("|", nats_standard.Nats.DefaultBlackList());
-
-            arguments = new NATS.ArgumentsObject.ArgumentsObject(filter, blacklist, useSmartSearch)
-            {
-                DirectoryPath = this.path,
-                KeywordSearch = entry1.Text,
-                MemoryLoad = RamAction.Active,
-                MultiLine = MultiLineAction.Active,
-                ThreadCount = 4,
-                SearchType = (MultiThreadAction.Active) ? NATS.ArgumentsObject.ArgumentsObject.eSearchType.Threaded : NATS.ArgumentsObject.ArgumentsObject.eSearchType.Single
-            };
-
-
-            if (!string.IsNullOrWhiteSpace(path))
-            {
-                textview1.Buffer.Text = string.Empty;
-                worker.RunWorkerAsync();
-                button1.Label = "Cancel";
-            }
-            else {
-                msgbox("alert", "your path is not defined, please select a path."); }
-        }
-    }
-
-
-
-
-
-    protected void InfoActivated(object sender, EventArgs e)
-    {
-        msgbox("About Nats", String.Concat("Nats Text Editor",
-            Environment.NewLine, "Copyright 2020 Luke Liukonen",
-            Environment.NewLine, "MIT License",
-            Environment.NewLine, "GTK GUI License GNU Lesser General Public License"));
-    }
-
-
-    private string PathPicker()
-    {
-        Gtk.FileChooserDialog filechooser =
-                 new Gtk.FileChooserDialog("Choose the file to open",
-                     this,
-                     FileChooserAction.SelectFolder,
-                     "Cancel", ResponseType.Cancel,
-                     "Open", ResponseType.Accept);
-        try
-        {
-            filechooser.Run();
-        return filechooser.CurrentFolder;
-        }
-        catch { return string.Empty; }
-        finally { filechooser.Destroy(); }
-
-    }
+    #region File
 
     protected void OpenPathEvent(object sender, EventArgs e)
     {
         path = PathPicker();
         this.Title = "Nats - " + path;
     }
-
+ 
     protected void SaveEvent(object sender, EventArgs e)
     {
         if (arguments != null)
@@ -189,4 +83,129 @@ public partial class MainWindow : Gtk.Window
     {
         Environment.Exit(0);
     }
+    #endregion
+
+    #region Help
+    protected void InfoActivated(object sender, EventArgs e)
+    {
+        msgbox("About Nats", String.Concat("Nats Text Editor",
+            Environment.NewLine, "Copyright 2020 Luke Liukonen",
+            Environment.NewLine, "MIT License",
+            Environment.NewLine, "GTK GUI License GNU Lesser General Public License"));
+    }
+
+    #endregion
+    #endregion
+
+    #region Page Events
+
+    protected void searchClick(object sender, EventArgs e)
+    {
+        if (worker.IsBusy)
+        {
+            worker.CancelAsync();
+            button1.Label = "Search";
+            entry1.Visible = true;
+        }
+        else
+        {
+            entry1.Visible = false;
+            bool useSmartSearch = false;
+            NATS.Filters.FileExtentionFilter.filterType filter = NATS.Filters.FileExtentionFilter.filterType.BlackList;
+            string blacklist = string.Join("|", nats_standard.Nats.DefaultBlackList());
+
+            arguments = new NATS.ArgumentsObject.ArgumentsObject(filter, blacklist, useSmartSearch)
+            {
+                DirectoryPath = this.path,
+                KeywordSearch = entry1.Text,
+                MemoryLoad = RamAction.Active,
+                MultiLine = MultiLineAction.Active,
+                ThreadCount = 4,
+                SearchType = (MultiThreadAction.Active) ? NATS.ArgumentsObject.ArgumentsObject.eSearchType.Threaded : NATS.ArgumentsObject.ArgumentsObject.eSearchType.Single
+            };
+
+
+            if (!string.IsNullOrWhiteSpace(path))
+            {
+                textview1.Buffer.Text = string.Empty;
+                worker.RunWorkerAsync();
+                button1.Label = "Cancel";
+            }
+            else
+            {
+                msgbox("alert", "your path is not defined, please select a path.");
+            }
+        }
+    }
+
+    #region Background worker
+
+    private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+    {
+    textview1.Buffer.Text = results;
+        entry1.Visible = true;
+        button1.Label = "Search";
+
+        if (e.Error == null)
+        {
+            this.Title = "Nats- Done -" + path;
+        }
+        else
+        {
+            textview1.Buffer.Text = e.Error.Message;
+        }
+
+    }
+
+    private void Worker_DoWork(object sender, DoWorkEventArgs e)
+    {
+
+        nats_standard.Nats nats = new nats_standard.Nats();
+        results = nats.OldSearch(arguments);
+
+    }
+    #endregion
+
+    #endregion
+
+    #region Helper
+    void msgbox(string title, string message)
+    {
+        Dialog dialog = null;
+        try
+        {
+            dialog = new Dialog(title, this,
+            DialogFlags.DestroyWithParent | DialogFlags.Modal,
+            ResponseType.Ok);
+            dialog.AddButton("ok", ResponseType.Ok);
+            dialog.VBox.Add(new Label(message));
+            dialog.ShowAll();
+            dialog.Run();
+        }
+        finally
+        {
+            if (dialog != null)
+                dialog.Destroy();
+        }
+    }
+
+    private string PathPicker()
+    {
+        Gtk.FileChooserDialog filechooser =
+                 new Gtk.FileChooserDialog("Choose the file to open",
+                     this,
+                     FileChooserAction.SelectFolder,
+                     "Cancel", ResponseType.Cancel,
+                     "Open", ResponseType.Accept);
+        try
+        {
+            filechooser.Run();
+            return filechooser.CurrentFolder;
+        }
+        catch { return string.Empty; }
+        finally { filechooser.Destroy(); }
+
+    }
+
+    #endregion
 }
