@@ -4,7 +4,8 @@
     <images-root-path>..</images-root-path>
   </configuration>
   <import>
-    <widget-library name="../bin/Release/Nats-Linux.exe" internal="true" />
+    <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <widget-library name="../bin/Debug/Nats-Linux.exe" internal="true" />
   </import>
   <widget class="Gtk.Window" id="MainWindow" design-size="1109 648">
     <action-group name="Default">
