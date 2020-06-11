@@ -7,11 +7,11 @@ public partial class MainWindow
 
 	private global::Gtk.Action FileAction;
 
-	private global::Gtk.Action OpenPathAction;
+	private global::Gtk.Action openAction;
 
-	private global::Gtk.Action SaveAction;
+	private global::Gtk.Action saveAction;
 
-	private global::Gtk.Action ExitAction;
+	private global::Gtk.Action stopAction;
 
 	private global::Gtk.Action EnginesAction;
 
@@ -27,7 +27,13 @@ public partial class MainWindow
 
 	private global::Gtk.Action HelpAction;
 
-	private global::Gtk.Action InfoAction;
+	private global::Gtk.Action dialogInfoAction;
+
+	private global::Gtk.ToggleAction SmartSearchAction;
+
+	private global::Gtk.RadioAction IndexWLoadAction;
+
+	private global::Gtk.RadioAction IndexOnlyAction;
 
 	private global::Gtk.Table table1;
 
@@ -52,15 +58,15 @@ public partial class MainWindow
 		this.FileAction = new global::Gtk.Action("FileAction", global::Mono.Unix.Catalog.GetString("File"), null, null);
 		this.FileAction.ShortLabel = global::Mono.Unix.Catalog.GetString("File");
 		w1.Add(this.FileAction, null);
-		this.OpenPathAction = new global::Gtk.Action("OpenPathAction", global::Mono.Unix.Catalog.GetString("Open Path"), null, null);
-		this.OpenPathAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Open Path");
-		w1.Add(this.OpenPathAction, null);
-		this.SaveAction = new global::Gtk.Action("SaveAction", global::Mono.Unix.Catalog.GetString("Save"), null, null);
-		this.SaveAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Save");
-		w1.Add(this.SaveAction, null);
-		this.ExitAction = new global::Gtk.Action("ExitAction", global::Mono.Unix.Catalog.GetString("Exit"), null, null);
-		this.ExitAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Exit");
-		w1.Add(this.ExitAction, null);
+		this.openAction = new global::Gtk.Action("openAction", global::Mono.Unix.Catalog.GetString("Open Path"), null, "gtk-open");
+		this.openAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Open Path");
+		w1.Add(this.openAction, null);
+		this.saveAction = new global::Gtk.Action("saveAction", global::Mono.Unix.Catalog.GetString("Save"), null, "gtk-save");
+		this.saveAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Save");
+		w1.Add(this.saveAction, null);
+		this.stopAction = new global::Gtk.Action("stopAction", global::Mono.Unix.Catalog.GetString("Exit"), null, "gtk-stop");
+		this.stopAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Exit");
+		w1.Add(this.stopAction, null);
 		this.EnginesAction = new global::Gtk.Action("EnginesAction", global::Mono.Unix.Catalog.GetString("Engines"), null, null);
 		this.EnginesAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Engines");
 		w1.Add(this.EnginesAction, null);
@@ -84,9 +90,20 @@ public partial class MainWindow
 		this.HelpAction = new global::Gtk.Action("HelpAction", global::Mono.Unix.Catalog.GetString("Help"), null, null);
 		this.HelpAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Help");
 		w1.Add(this.HelpAction, null);
-		this.InfoAction = new global::Gtk.Action("InfoAction", global::Mono.Unix.Catalog.GetString("Info"), null, null);
-		this.InfoAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Info");
-		w1.Add(this.InfoAction, null);
+		this.dialogInfoAction = new global::Gtk.Action("dialogInfoAction", global::Mono.Unix.Catalog.GetString("Info"), null, "gtk-dialog-info");
+		this.dialogInfoAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Info");
+		w1.Add(this.dialogInfoAction, null);
+		this.SmartSearchAction = new global::Gtk.ToggleAction("SmartSearchAction", global::Mono.Unix.Catalog.GetString("Smart Search"), null, null);
+		this.SmartSearchAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Smart Search");
+		w1.Add(this.SmartSearchAction, null);
+		this.IndexWLoadAction = new global::Gtk.RadioAction("IndexWLoadAction", global::Mono.Unix.Catalog.GetString("Index w/ Load"), null, null, 0);
+		this.IndexWLoadAction.Group = this.MultiThreadAction.Group;
+		this.IndexWLoadAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Index w/ Load");
+		w1.Add(this.IndexWLoadAction, null);
+		this.IndexOnlyAction = new global::Gtk.RadioAction("IndexOnlyAction", global::Mono.Unix.Catalog.GetString("Index Only"), null, null, 0);
+		this.IndexOnlyAction.Group = this.IndexWLoadAction.Group;
+		this.IndexOnlyAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Index Only");
+		w1.Add(this.IndexOnlyAction, null);
 		this.UIManager.InsertActionGroup(w1, 0);
 		this.AddAccelGroup(this.UIManager.AccelGroup);
 		this.Name = "MainWindow";
@@ -111,7 +128,7 @@ public partial class MainWindow
 		w3.TopAttach = ((uint)(2));
 		w3.BottomAttach = ((uint)(3));
 		// Container child table1.Gtk.Table+TableChild
-		this.UIManager.AddUiFromString(@"<ui><menubar name='menubar1'><menu name='FileAction' action='FileAction'><menuitem name='OpenPathAction' action='OpenPathAction'/><menuitem name='SaveAction' action='SaveAction'/><menuitem name='ExitAction' action='ExitAction'/></menu><menu name='EnginesAction' action='EnginesAction'><menuitem name='MultiThreadAction' action='MultiThreadAction'/><menuitem name='SingleThreadAction' action='SingleThreadAction'/></menu><menu name='OptionsAction' action='OptionsAction'><menuitem name='RamAction' action='RamAction'/><menuitem name='MultiLineAction' action='MultiLineAction'/></menu><menu name='HelpAction' action='HelpAction'><menuitem name='InfoAction' action='InfoAction'/></menu></menubar></ui>");
+		this.UIManager.AddUiFromString(@"<ui><menubar name='menubar1'><menu name='FileAction' action='FileAction'><menuitem name='openAction' action='openAction'/><menuitem name='saveAction' action='saveAction'/><menuitem name='stopAction' action='stopAction'/></menu><menu name='EnginesAction' action='EnginesAction'><menuitem name='MultiThreadAction' action='MultiThreadAction'/><menuitem name='SingleThreadAction' action='SingleThreadAction'/><menuitem name='IndexWLoadAction' action='IndexWLoadAction'/><menuitem name='IndexOnlyAction' action='IndexOnlyAction'/></menu><menu name='OptionsAction' action='OptionsAction'><menuitem name='RamAction' action='RamAction'/><menuitem name='MultiLineAction' action='MultiLineAction'/><menuitem name='SmartSearchAction' action='SmartSearchAction'/></menu><menu name='HelpAction' action='HelpAction'><menuitem name='dialogInfoAction' action='dialogInfoAction'/></menu></menubar></ui>");
 		this.menubar1 = ((global::Gtk.MenuBar)(this.UIManager.GetWidget("/menubar1")));
 		this.menubar1.Name = "menubar1";
 		this.table1.Add(this.menubar1);
@@ -157,10 +174,10 @@ public partial class MainWindow
 		this.DefaultHeight = 648;
 		this.Show();
 		this.DeleteEvent += new global::Gtk.DeleteEventHandler(this.OnDeleteEvent);
-		this.OpenPathAction.Activated += new global::System.EventHandler(this.OpenPathEvent);
-		this.SaveAction.Activated += new global::System.EventHandler(this.SaveEvent);
-		this.ExitAction.Activated += new global::System.EventHandler(this.ExitEvent);
-		this.InfoAction.Activated += new global::System.EventHandler(this.InfoActivated);
+		this.openAction.Activated += new global::System.EventHandler(this.OpenPathEvent);
+		this.saveAction.Activated += new global::System.EventHandler(this.SaveEvent);
+		this.stopAction.Activated += new global::System.EventHandler(this.ExitEvent);
+		this.dialogInfoAction.Activated += new global::System.EventHandler(this.InfoActivated);
 		this.button1.Clicked += new global::System.EventHandler(this.searchClick);
 	}
 }

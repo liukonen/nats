@@ -11,7 +11,7 @@ namespace NATS.SearchTypes
 
         public override void Execute()
         {
-            Index.SQLiteIndex CustomIndex = new Index.SQLiteIndex();
+            Index.liteDBindex CustomIndex = new Index.liteDBindex();
             Console.WriteLine("Building Index");
             CustomIndex.Generate(Arguments.DirectoryPath, false);
             Console.WriteLine("Search:");

@@ -6,7 +6,7 @@
 
         public override void Execute()
         {
-            Index.SQLiteIndex CustomIndex = new Index.SQLiteIndex();
+            Index.liteDBindex CustomIndex = new Index.liteDBindex();
             CustomIndex.Generate(Arguments.DirectoryPath, true);
             output = "complete.";
             CustomIndex.close();

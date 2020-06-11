@@ -5,7 +5,7 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../bin/Debug/Nats-Linux.exe" internal="true" />
+    <widget-library name="../bin/Release/Nats-Linux.exe" internal="true" />
   </import>
   <widget class="Gtk.Window" id="MainWindow" design-size="1109 648">
     <action-group name="Default">
@@ -14,22 +14,25 @@
         <property name="Label" translatable="yes">File</property>
         <property name="ShortLabel" translatable="yes">File</property>
       </action>
-      <action id="OpenPathAction">
+      <action id="openAction">
         <property name="Type">Action</property>
         <property name="Label" translatable="yes">Open Path</property>
         <property name="ShortLabel" translatable="yes">Open Path</property>
+        <property name="StockId">gtk-open</property>
         <signal name="Activated" handler="OpenPathEvent" />
       </action>
-      <action id="SaveAction">
+      <action id="saveAction">
         <property name="Type">Action</property>
         <property name="Label" translatable="yes">Save</property>
         <property name="ShortLabel" translatable="yes">Save</property>
+        <property name="StockId">gtk-save</property>
         <signal name="Activated" handler="SaveEvent" />
       </action>
-      <action id="ExitAction">
+      <action id="stopAction">
         <property name="Type">Action</property>
         <property name="Label" translatable="yes">Exit</property>
         <property name="ShortLabel" translatable="yes">Exit</property>
+        <property name="StockId">gtk-stop</property>
         <signal name="Activated" handler="ExitEvent" />
       </action>
       <action id="EnginesAction">
@@ -79,11 +82,37 @@
         <property name="Label" translatable="yes">Help</property>
         <property name="ShortLabel" translatable="yes">Help</property>
       </action>
-      <action id="InfoAction">
+      <action id="dialogInfoAction">
         <property name="Type">Action</property>
         <property name="Label" translatable="yes">Info</property>
         <property name="ShortLabel" translatable="yes">Info</property>
+        <property name="StockId">gtk-dialog-info</property>
         <signal name="Activated" handler="InfoActivated" />
+      </action>
+      <action id="SmartSearchAction">
+        <property name="Type">Toggle</property>
+        <property name="Label" translatable="yes">Smart Search</property>
+        <property name="ShortLabel" translatable="yes">Smart Search</property>
+        <property name="DrawAsRadio">False</property>
+        <property name="Active">False</property>
+      </action>
+      <action id="IndexWLoadAction">
+        <property name="Type">Radio</property>
+        <property name="Label" translatable="yes">Index w/ Load</property>
+        <property name="ShortLabel" translatable="yes">Index w/ Load</property>
+        <property name="DrawAsRadio">False</property>
+        <property name="Active">False</property>
+        <property name="Value">0</property>
+        <property name="Group">group1</property>
+      </action>
+      <action id="IndexOnlyAction">
+        <property name="Type">Radio</property>
+        <property name="Label" translatable="yes">Index Only</property>
+        <property name="ShortLabel" translatable="yes">Index Only</property>
+        <property name="DrawAsRadio">False</property>
+        <property name="Active">False</property>
+        <property name="Value">0</property>
+        <property name="Group">group1</property>
       </action>
     </action-group>
     <property name="MemberName" />
@@ -126,20 +155,23 @@
             <property name="MemberName" />
             <node name="__gtksharp_125_Stetic_Editor_ActionMenuBar" type="Menubar">
               <node type="Menu" action="FileAction">
-                <node type="Menuitem" action="OpenPathAction" />
-                <node type="Menuitem" action="SaveAction" />
-                <node type="Menuitem" action="ExitAction" />
+                <node type="Menuitem" action="openAction" />
+                <node type="Menuitem" action="saveAction" />
+                <node type="Menuitem" action="stopAction" />
               </node>
               <node type="Menu" action="EnginesAction">
                 <node type="Menuitem" action="MultiThreadAction" />
                 <node type="Menuitem" action="SingleThreadAction" />
+                <node type="Menuitem" action="IndexWLoadAction" />
+                <node type="Menuitem" action="IndexOnlyAction" />
               </node>
               <node type="Menu" action="OptionsAction">
                 <node type="Menuitem" action="RamAction" />
                 <node type="Menuitem" action="MultiLineAction" />
+                <node type="Menuitem" action="SmartSearchAction" />
               </node>
               <node type="Menu" action="HelpAction">
-                <node type="Menuitem" action="InfoAction" />
+                <node type="Menuitem" action="dialogInfoAction" />
               </node>
             </node>
           </widget>

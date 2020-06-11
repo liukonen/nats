@@ -11,7 +11,7 @@ namespace NATS.SearchTypes
 
         public override void Execute()
         {
-            Index.SQLiteIndex CustomIndex = new Index.SQLiteIndex();
+            Index.liteDBindex CustomIndex = new Index.liteDBindex();
             List<string> Response = CustomIndex.Inquire(Arguments.KeywordSearch, Arguments.DirectoryPath);
             output = string.Join(Environment.NewLine, from string Item in Response where CheckFileExt(Item) select Item);
             CustomIndex.close();

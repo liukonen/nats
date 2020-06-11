@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Microsoft.VisualBasic;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace Nats_Win
 {
@@ -72,7 +73,7 @@ namespace Nats_Win
                             try
                             {
                                 var filename = dia.FileName;
-                                if (string.IsNullOrWhiteSpace(filename)) { MessageBox.Show("err", "did not save, no filename selecte"); }
+                                if (string.IsNullOrWhiteSpace(filename)) { MessageBox.Show("err", "did not save, no filename selected"); }
                                 else if (System.IO.File.Exists(filename)) { MessageBox.Show("err", "File already exists, please use a different name"); }
                                 else { System.IO.File.WriteAllText(filename, string.Join(Environment.NewLine, responseItems)); }
                             }
@@ -100,30 +101,15 @@ namespace Nats_Win
             if (MessageBox.Show("Are " + threadCount + " threads correct", "Thread Count", MessageBoxButtons.YesNo) == DialogResult.No)
             {
                 int I = 0;
-                while (I == 0)
-                {
-
-                    int.TryParse(Interaction.InputBox("Enter Number of threads", "threads", "4"), out I);
-                }
+                while (I == 0) { int.TryParse(Interaction.InputBox("Enter Number of threads", "threads", "4"), out I); }
             }
-            SearchType = NATS.ArgumentsObject.ArgumentsObject.eSearchType.Threaded;
-            singleThreadToolStripMenuItem.Checked = false;
-            windowsIndexToolStripMenuItem.Checked = false;
-            multiThreadToolStripMenuItem.Checked = true;
-            localIndexToolStripMenuItem.Checked = false;
-            basicToolStripMenuItem.Checked = false;
-            populateAndSearchToolStripMenuItem.Checked = false;
+            HandleEngineSelect(NATS.ArgumentsObject.ArgumentsObject.eSearchType.Threaded);
+
         }
 
         private void singleThreadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SearchType = NATS.ArgumentsObject.ArgumentsObject.eSearchType.Single;
-            singleThreadToolStripMenuItem.Checked = true;
-            windowsIndexToolStripMenuItem.Checked = false;
-            multiThreadToolStripMenuItem.Checked = false;
-            localIndexToolStripMenuItem.Checked = false;
-            basicToolStripMenuItem.Checked = false;
-            populateAndSearchToolStripMenuItem.Checked = false;
+            HandleEngineSelect(NATS.ArgumentsObject.ArgumentsObject.eSearchType.Single);
         }
 
 
@@ -134,46 +120,19 @@ namespace Nats_Win
         /// <param name="e"></param>
         private void windowsIndexToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            SearchType = NATS.ArgumentsObject.ArgumentsObject.eSearchType.WindowsIndex;
-            singleThreadToolStripMenuItem.Checked = false;
-            windowsIndexToolStripMenuItem.Checked = true;
-            multiThreadToolStripMenuItem.Checked = false;
-            localIndexToolStripMenuItem.Checked = false;
-            basicToolStripMenuItem.Checked = false;
-            populateAndSearchToolStripMenuItem.Checked = false;
+            HandleEngineSelect(NATS.ArgumentsObject.ArgumentsObject.eSearchType.WindowsIndex);
         }
 
-        /// <summary>
-        /// INDEXES NOT WORKING
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+
         private void basicToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SearchType = NATS.ArgumentsObject.ArgumentsObject.eSearchType.LocalIndex;
-            singleThreadToolStripMenuItem.Checked = false;
-            windowsIndexToolStripMenuItem.Checked = false;
-            multiThreadToolStripMenuItem.Checked = false;
-            localIndexToolStripMenuItem.Checked = true;
-            basicToolStripMenuItem.Checked = true;
-            populateAndSearchToolStripMenuItem.Checked = false;
+            HandleEngineSelect( NATS.ArgumentsObject.ArgumentsObject.eSearchType.LocalIndex);
         }
 
-        /// <summary>
-        /// INDEXS NOT WORKING
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+
         private void populateAndSearchToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SearchType = NATS.ArgumentsObject.ArgumentsObject.eSearchType.indexgenerateandsearch;
-            singleThreadToolStripMenuItem.Checked = false;
-            windowsIndexToolStripMenuItem.Checked = false;
-            multiThreadToolStripMenuItem.Checked = false;
-            localIndexToolStripMenuItem.Checked = true;
-            basicToolStripMenuItem.Checked = false;
-            populateAndSearchToolStripMenuItem.Checked = true;
-
+            HandleEngineSelect(NATS.ArgumentsObject.ArgumentsObject.eSearchType.indexgenerateandsearch);
         }
         
         /// <summary>
@@ -185,6 +144,17 @@ namespace Nats_Win
         {
 
         }
+
+        private void HandleEngineSelect(NATS.ArgumentsObject.ArgumentsObject.eSearchType searchType)
+        {
+            SearchType = searchType;
+            singleThreadToolStripMenuItem.Checked = (searchType == NATS.ArgumentsObject.ArgumentsObject.eSearchType.Single);
+            windowsIndexToolStripMenuItem.Checked = (searchType == NATS.ArgumentsObject.ArgumentsObject.eSearchType.WindowsIndex);
+            multiThreadToolStripMenuItem.Checked = (searchType == NATS.ArgumentsObject.ArgumentsObject.eSearchType.Threaded);
+            localIndexToolStripMenuItem.Checked = (searchType == NATS.ArgumentsObject.ArgumentsObject.eSearchType.LocalIndex);
+            populateAndSearchToolStripMenuItem.Checked = (searchType == NATS.ArgumentsObject.ArgumentsObject.eSearchType.indexgenerateandsearch);
+        }
+
         #endregion
 
         #region Options
@@ -356,11 +326,7 @@ namespace Nats_Win
         {
             using (FolderBrowserDialog folderBrowserDialog1 = new FolderBrowserDialog())
             {
-
-                if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
-                {
-                    return folderBrowserDialog1.SelectedPath;
-                }
+                if (folderBrowserDialog1.ShowDialog() == DialogResult.OK) return folderBrowserDialog1.SelectedPath;
             }
             return string.Empty;
         }
@@ -379,19 +345,15 @@ namespace Nats_Win
             {
 
                 disapppvedExtensionsToolStripMenuItem.DropDownItems.Add("+Add", null, AddItem);
-                foreach (string items in BlackListItems)
-                {
-                    disapppvedExtensionsToolStripMenuItem.DropDownItems.Add(items, null, WBDC);
-                }
+                var dddItems = from string blItem in BlackListItems select new ToolStripDropDownButton(blItem, null, WBDC);
+                disapppvedExtensionsToolStripMenuItem.DropDownItems.AddRange(dddItems.ToArray());
             }
             else
             {
 
                 approvedExtensionsToolStripMenuItem.DropDownItems.Add("+Add", null, AddItem);
-                foreach (string items in WhiteListItems)
-                {
-                    approvedExtensionsToolStripMenuItem.DropDownItems.Add(items, null, WBDC);
-                }
+                var ddItems = from string wlItem in WhiteListItems select new ToolStripDropDownButton(wlItem, null, WBDC);
+                approvedExtensionsToolStripMenuItem.DropDownItems.AddRange(ddItems.ToArray());
             }
 
         }

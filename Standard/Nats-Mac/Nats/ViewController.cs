@@ -22,25 +22,11 @@ namespace Nats
         #endregion
 
         #region Application Access
-        public static AppDelegate App
-        {
-            get { return (AppDelegate)NSApplication.SharedApplication.Delegate; }
-        }
+        public static AppDelegate App { get { return (AppDelegate)NSApplication.SharedApplication.Delegate; } }
         #endregion
 
         #region Computed Properties
-        public override NSObject RepresentedObject
-        {
-            get
-            {
-                return base.RepresentedObject;
-            }
-            set
-            {
-                base.RepresentedObject = value;
-                // Update the view, if already loaded.
-            }
-        }
+        public override NSObject RepresentedObject { get { return base.RepresentedObject; } set { base.RepresentedObject = value; } }
         #endregion
 
         #region Constructors
@@ -61,10 +47,12 @@ namespace Nats
             if (e.Error == null)
             { (new NSAlert() { AlertStyle = NSAlertStyle.Informational, MessageText = "Done", InformativeText = "search complete" }).RunModal(); }
             else
-            { (new NSAlert() { AlertStyle = NSAlertStyle.Critical, MessageText = "Done", InformativeText = e.Error.ToString() }).RunModal(); }
-
-            //(new NSAlert() { AlertStyle = NSAlertStyle.Informational, MessageText = "Done", InformativeText = "search complete" }).RunModal();
-
+            { (new NSAlert() { AlertStyle = NSAlertStyle.Critical, MessageText = "Done", InformativeText = e.Error.Message}).RunModal();
+                
+                System.IO.File.WriteAllText("err.log", e.Error.ToString());
+                string s = System.IO.Path.GetFullPath("err.log");
+                Console.WriteLine(s);
+            }
         }
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
@@ -87,12 +75,7 @@ namespace Nats
         #endregion
 
         #region Override Methods
-        public override void ViewDidLoad()
-        {
-            base.ViewDidLoad();
-
-            // Do any additional setup after loading the view.
-        }
+        public override void ViewDidLoad() { base.ViewDidLoad(); }
 
         public override void ViewWillAppear()
         {
@@ -109,12 +92,7 @@ namespace Nats
         partial void Search_click(NSObject sender)
         {
 
-            if (worker.IsBusy)
-            {
-                btnSearch.Title = "Search";
-                worker.CancelAsync();
-                
-            }
+            if (worker.IsBusy) { btnSearch.Title = "Search"; worker.CancelAsync(); }
             else
             {
                 keywords = txtSearch.StringValue;

@@ -1,5 +1,6 @@
 using AppKit;
 using Foundation;
+using NATS.ArgumentsObject;
 
 namespace Nats
 {
@@ -11,22 +12,16 @@ namespace Nats
         #endregion
 
         #region Base items
-        public AppDelegate()
-        {
-        }
+        public AppDelegate(){}
 
         public override void DidFinishLaunching(NSNotification notification)
         {
             NatsGui.Path = DirPicker();
-            //Disable items not working on first release
-            mnIndexOnly.Hidden = true;
-            mnIndexWLoad.Hidden = true;
-            mnSmart_click.Hidden = true;
-            // Insert code here to initialize your application
         }
 
         public override void WillTerminate(NSNotification notification)
         {
+            nats_standard.Index.LiteDbAbstraction.Instance().Dispose();
             // Insert code here to tear down your application
         }
 
@@ -51,19 +46,12 @@ namespace Nats
         {
             var dialog = new NSSavePanel()
             {
-                Title = "Save results",
-                AllowedFileTypes = new string[] { "txt" },
-                AllowsOtherFileTypes = false,
-                ShowsTagField = false,
-                NameFieldStringValue = string.Concat(NatsGui.keywords, " ", System.DateTime.Now.ToString("yy-MM-dd-hh-mm-ss"), ".txt")
+                Title = "Save results", AllowedFileTypes = new string[] { "txt" },AllowsOtherFileTypes = false,
+                ShowsTagField = false,NameFieldStringValue = string.Concat(NatsGui.keywords, " ", System.DateTime.Now.ToString("yy-MM-dd-hh-mm-ss"), ".txt")
             };
             if (dialog.RunModal() == 1)
             {
-                if (dialog.Url != null && !System.IO.File.Exists(dialog.Url.Path))
-                {
-                    System.IO.File.WriteAllText(dialog.Url.Path, NatsGui.results);
-                }
-                else { }
+                if (dialog.Url != null && !System.IO.File.Exists(dialog.Url.Path)) System.IO.File.WriteAllText(dialog.Url.Path, NatsGui.results);
             }
 
         }
@@ -73,59 +61,38 @@ namespace Nats
 
         partial void mnSingleThread_click(NSObject sender)
         {
-            mnSingleThread.State = NSCellStateValue.On;
-            mnMultiThread.State = NSCellStateValue.Off;
-            mnIndexOnly.State = NSCellStateValue.Off;
-            mnIndexWLoad.State = NSCellStateValue.Off;
-            NatsGui.SearchType = NATS.ArgumentsObject.ArgumentsObject.eSearchType.Single;
-
+            handleSearchType(NATS.ArgumentsObject.ArgumentsObject.eSearchType.Single);
         }
 
         partial void mnMultiThread_click(NSObject sender)
         {
-            mnSingleThread.State = NSCellStateValue.Off;
-            mnMultiThread.State = NSCellStateValue.On;
-            mnIndexOnly.State = NSCellStateValue.Off;
-            mnIndexWLoad.State = NSCellStateValue.Off;
-            NatsGui.SearchType = NATS.ArgumentsObject.ArgumentsObject.eSearchType.Threaded;
-
+            handleSearchType(NATS.ArgumentsObject.ArgumentsObject.eSearchType.Threaded);
         }
 
-        /// <summary>
-        /// Index disabled, DB issues
-        /// </summary>
-        /// <param name="sender"></param>
+
         partial void mnIndex_click(NSObject sender)
         {
-            mnSingleThread.State = NSCellStateValue.Off;
-            mnMultiThread.State = NSCellStateValue.Off;
-            mnIndexOnly.State = NSCellStateValue.On;
-            mnIndexWLoad.State = NSCellStateValue.Off;
-            NatsGui.SearchType = NATS.ArgumentsObject.ArgumentsObject.eSearchType.LocalIndex;
-
+            handleSearchType(NATS.ArgumentsObject.ArgumentsObject.eSearchType.LocalIndex);
         }
 
-        /// <summary>
-        /// Index disabled DB isues
-        /// </summary>
-        /// <param name="sender"></param>
         partial void mnIndexLoad_Click(NSObject sender)
         {
-            mnSingleThread.State = NSCellStateValue.Off;
-            mnMultiThread.State = NSCellStateValue.Off;
-            mnIndexOnly.State = NSCellStateValue.Off;
-            mnIndexWLoad.State = NSCellStateValue.On;
-            NatsGui.SearchType = NATS.ArgumentsObject.ArgumentsObject.eSearchType.indexgenerateandsearch;
-
+            handleSearchType(ArgumentsObject.eSearchType.indexgenerateandsearch);
         }
+
+        private void handleSearchType(ArgumentsObject.eSearchType searchType)
+        {
+            mnSingleThread.State = (searchType == ArgumentsObject.eSearchType.Single) ? NSCellStateValue.On : NSCellStateValue.Off;
+            mnMultiThread.State = (searchType == ArgumentsObject.eSearchType.Threaded) ? NSCellStateValue.On : NSCellStateValue.Off;
+            mnIndexOnly.State = (searchType == ArgumentsObject.eSearchType.LocalIndex) ? NSCellStateValue.On : NSCellStateValue.Off;
+            mnIndexWLoad.State = (searchType == ArgumentsObject.eSearchType.indexgenerateandsearch) ? NSCellStateValue.On : NSCellStateValue.Off;
+            NatsGui.SearchType = searchType;
+        }
+
         #endregion
 
         #region Options
 
-        /// <summary>
-        /// Disabled due to SS not working on mac
-        /// </summary>
-        /// <param name="sender"></param>
         partial void mnSmartSearch_click(NSObject sender)
         {
             mnSmart_click.State = (mnSmart_click.State == NSCellStateValue.On) ? NSCellStateValue.Off : NSCellStateValue.On;
@@ -157,26 +124,10 @@ namespace Nats
         #region Helper
         static string DirPicker()
         {
-            var dialog = new NSOpenPanel()
-            {
-                Title = "Choose single directory | NATS",
-                ShowsResizeIndicator = true,
-                ShowsHiddenFiles = false,
-                CanChooseDirectories = true,
-                CanChooseFiles = false
-            };
+            var dialog = new NSOpenPanel() { Title = "Choose single directory | NATS", ShowsResizeIndicator = true, ShowsHiddenFiles = false, CanChooseDirectories = true, CanChooseFiles = false };
 
-            if (dialog.RunModal() == 1)
-            {
-                var result = dialog.Url;
-
-                if (result != null)
-                {
-                    return result.Path;
-                }
-            }
+            if (dialog.RunModal() == 1 && dialog.Url != null) return dialog.Url.Path;
             return string.Empty;
-
         }
         #endregion
     }

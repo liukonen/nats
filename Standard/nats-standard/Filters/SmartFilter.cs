@@ -82,8 +82,12 @@ namespace NATS.Filters
 
             foreach (System.Text.EncodingInfo encoding in encodings)
             {
-                byte[] pre = encoding.GetEncoding().GetPreamble();
-                if (pre.Length > 0) { EncodePre.Add(pre); }
+                try
+                {
+                    byte[] pre = encoding.GetEncoding().GetPreamble();
+                    if (pre.Length > 0) { EncodePre.Add(pre); }
+                }
+                catch  { };
             }
             return EncodePre;
         }

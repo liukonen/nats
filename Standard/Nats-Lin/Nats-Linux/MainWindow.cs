@@ -110,7 +110,7 @@ public partial class MainWindow : Gtk.Window
         else
         {
             entry1.Visible = false;
-            bool useSmartSearch = false;
+            bool useSmartSearch = SmartSearchAction.Active;//false;
             NATS.Filters.FileExtentionFilter.filterType filter = NATS.Filters.FileExtentionFilter.filterType.BlackList;
             string blacklist = string.Join("|", nats_standard.Nats.DefaultBlackList());
 
@@ -121,7 +121,7 @@ public partial class MainWindow : Gtk.Window
                 MemoryLoad = RamAction.Active,
                 MultiLine = MultiLineAction.Active,
                 ThreadCount = 4,
-                SearchType = (MultiThreadAction.Active) ? NATS.ArgumentsObject.ArgumentsObject.eSearchType.Threaded : NATS.ArgumentsObject.ArgumentsObject.eSearchType.Single
+                SearchType = GetSearchType()
             };
 
 
@@ -137,6 +137,16 @@ public partial class MainWindow : Gtk.Window
             }
         }
     }
+
+    private NATS.ArgumentsObject.ArgumentsObject.eSearchType GetSearchType()
+    {
+
+        if (MultiThreadAction.Active) return NATS.ArgumentsObject.ArgumentsObject.eSearchType.Threaded;
+        if (IndexWLoadAction.Active) return NATS.ArgumentsObject.ArgumentsObject.eSearchType.indexgenerateandsearch;
+        if (IndexOnlyAction.Active) return NATS.ArgumentsObject.ArgumentsObject.eSearchType.LocalIndex;
+        return NATS.ArgumentsObject.ArgumentsObject.eSearchType.Single;
+    }
+
 
     #region Background worker
 
