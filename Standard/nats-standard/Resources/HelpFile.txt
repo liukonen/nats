@@ -8,9 +8,9 @@ NATS is a basic plain text file scanner.
 
 
 ShortList: Options                 
-                 * -ApprovedList (whitelist)
+                 * -ApprovedList
                  * -Build Index
-                 * -DisapprovedList (BlackList)
+                 * -DisapprovedList
                  * -Help
                  * -Index search
                  * -Limited Index Search (not fresh)
@@ -40,7 +40,7 @@ ShortList: Options
  -B               Build: Indexes on a directory only. A keyword needs to be 
                   passed but is not used in the action of indexing.  
                   Indexing also defaults to a hard coded set of file types 
-                  that are whitelisted, blacklisted, and used "Smart Search" 
+                  that are aprove listed, deny listed, and used "Smart Search" 
                   in order to scan the files. There is a chance Indexing will 
                   not always pick up on text files.
 
@@ -62,7 +62,7 @@ ShortList: Options
 
  -D [ext]        Disapproved Extensions: Implements filtering of file 
                  extensions not to scan. Multiple extensions will be 
-                 deliminated with the | symbol. NAPS has a default blacklist 
+                 deliminated with the | symbol. NAPS has a default deny list 
                  of [7z|bmp|db|db-journal|dll|doc|docx|exe|jpg|m4v|mov|mp3|mp4
                  |pdb|pdf|png|tmp|xls|xlsx|zip] and invoking this will 
                  override the default

@@ -111,10 +111,10 @@ public partial class MainWindow : Gtk.Window
         {
             entry1.Visible = false;
             bool useSmartSearch = SmartSearchAction.Active;//false;
-            NATS.Filters.FileExtentionFilter.filterType filter = NATS.Filters.FileExtentionFilter.filterType.BlackList;
-            string blacklist = string.Join("|", nats_standard.Nats.DefaultBlackList());
+            NATS.Filters.FileExtentionFilter.filterType filter = NATS.Filters.FileExtentionFilter.filterType.DenyList;
+            string Denylist = string.Join("|", nats_standard.Nats.DefaultDenyList());
 
-            arguments = new NATS.ArgumentsObject.ArgumentsObject(filter, blacklist, useSmartSearch)
+            arguments = new NATS.ArgumentsObject.ArgumentsObject(filter, Denylist, useSmartSearch)
             {
                 DirectoryPath = this.path,
                 KeywordSearch = entry1.Text,

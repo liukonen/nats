@@ -56,7 +56,7 @@ namespace NATS.ArgumentsObject
         {
             string ExtentionList = NATS.Filters.FileExtentionFilter.DefaultFileExtentions;
             string[] Items = arguments.Split('-');
-            Filters.FileExtentionFilter.filterType FilterType = Filters.FileExtentionFilter.filterType.BlackList;
+            Filters.FileExtentionFilter.filterType FilterType = Filters.FileExtentionFilter.filterType.DenyList;
 
             foreach (string Item in Items)
             {
@@ -76,7 +76,7 @@ namespace NATS.ArgumentsObject
                             break;
                         case "D": ExtentionList = itemVal; break;
                         case "A":
-                            ExtentionList = itemVal; FilterType = Filters.FileExtentionFilter.filterType.WhiteList;
+                            ExtentionList = itemVal; FilterType = Filters.FileExtentionFilter.filterType.AproveList;
                             break;
                         case "M": MultiLine = true; break;
                         case "H": DisplayHelp = true; break;
@@ -90,9 +90,9 @@ namespace NATS.ArgumentsObject
                     }
                 }
 
-                /* -ApprovedList (whitelist)
+                /* -ApprovedList 
                  * -Build Index
-                 * -DisapprovedList (BlackList)
+                 * -DisapprovedList 
                  * -Help
                  * -Index search
                  * -Limited Index Search (not fresh)

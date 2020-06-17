@@ -17,9 +17,9 @@ namespace nats_standard
         }
         public static string GUIHelpFile() { return Properties.Resources.GUIHelp; }
 
-        public static string[] DefaultBlackList()
+        public static string[] DefaultDenyList()
         {
-            return Properties.Resources.DefaultBlacklist.Split('|');
+            return Properties.Resources.DefaultDenylist.Split('|');
                 }
 
 

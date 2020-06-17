@@ -97,11 +97,11 @@ public partial class MainWindow
 		this.SmartSearchAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Smart Search");
 		w1.Add(this.SmartSearchAction, null);
 		this.IndexWLoadAction = new global::Gtk.RadioAction("IndexWLoadAction", global::Mono.Unix.Catalog.GetString("Index w/ Load"), null, null, 0);
-		this.IndexWLoadAction.Group = this.MultiThreadAction.Group;
+		this.IndexWLoadAction.Group = this.SingleThreadAction.Group;
 		this.IndexWLoadAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Index w/ Load");
 		w1.Add(this.IndexWLoadAction, null);
 		this.IndexOnlyAction = new global::Gtk.RadioAction("IndexOnlyAction", global::Mono.Unix.Catalog.GetString("Index Only"), null, null, 0);
-		this.IndexOnlyAction.Group = this.IndexWLoadAction.Group;
+		this.IndexOnlyAction.Group = this.SingleThreadAction.Group;
 		this.IndexOnlyAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Index Only");
 		w1.Add(this.IndexOnlyAction, null);
 		this.UIManager.InsertActionGroup(w1, 0);

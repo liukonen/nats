@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DefaultBlacklist" xml:space="preserve">
+  <data name="DefaultDenylist" xml:space="preserve">
     <value>7z|bmp|db|db-journal|dll|doc|docx|exe|jpg|m4v|mov|mp3|mp4|pdb|pdf|png|tmp|xls|xlsx|zip</value>
   </data>
   <data name="Fin" xml:space="preserve">

@@ -14,7 +14,7 @@ namespace Nats
         public Boolean UseSmartSearch = false;
         public Boolean UseMultiLine = false;
         public NATS.ArgumentsObject.ArgumentsObject.eSearchType SearchType = NATS.ArgumentsObject.ArgumentsObject.eSearchType.Threaded;
-        public List<string> BlacklistItems = new List<string>(nats_standard.Nats.DefaultBlackList());
+        public List<string> DenylistItems = new List<string>(nats_standard.Nats.DefaultDenyList());
         public string Path = string.Empty;
         public System.ComponentModel.BackgroundWorker worker = new BackgroundWorker() { WorkerSupportsCancellation = true };
         public string results = string.Empty;
@@ -57,8 +57,8 @@ namespace Nats
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            var FilterType = NATS.Filters.FileExtentionFilter.filterType.BlackList;
-            string Filter = string.Join("|", BlacklistItems);
+            var FilterType = NATS.Filters.FileExtentionFilter.filterType.DenyList;
+            string Filter = string.Join("|", DenylistItems);
             var Args = new NATS.ArgumentsObject.ArgumentsObject(FilterType, Filter, UseSmartSearch)
             {
                 DirectoryPath = Path,

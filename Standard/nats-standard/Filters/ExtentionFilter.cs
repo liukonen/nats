@@ -5,36 +5,36 @@ namespace NATS.Filters
 {
     public class FileExtentionFilter : FileInfoFilters
     {
-        public enum filterType { WhiteList, BlackList }
+        public enum filterType { AproveList, DenyList }
 
-        public filterType Ftype = filterType.BlackList;
+        public filterType Ftype = filterType.DenyList;
         public const string DefaultFileExtentions = "";
         List<string> FileExtentions = new List<string>();
 
         public FileExtentionFilter(string ParamArguments, filterType type)
         {
-            FileExtentions = ExtractBlackListExtentions(ParamArguments, type);
+            FileExtentions = ExtractDenyListExtentions(ParamArguments, type);
             Ftype = type;
         }
 
         public override bool IsValid(FileInfo FileInfo)
         {
-            if (FileExtentions.Contains(FileInfo.Extension.ToLower())) { return Ftype == filterType.WhiteList; }
-            return (Ftype == filterType.BlackList);
+            if (FileExtentions.Contains(FileInfo.Extension.ToLower())) { return Ftype == filterType.AproveList; }
+            return (Ftype == filterType.DenyList);
         }
 
-        private static List<string> ExtractBlackListExtentions(string BlackListVaraible, filterType type)
+        private static List<string> ExtractDenyListExtentions(string DenyListVaraible, filterType type)
         {
-            List<string> BlackListArray = new List<string>();
-            if (BlackListVaraible == string.Empty && type == filterType.BlackList) { BlackListVaraible = nats_standard.Properties.Resources.DefaultBlacklist; }
+            List<string> DenyListArray = new List<string>();
+            if (DenyListVaraible == string.Empty && type == filterType.DenyList) { DenyListVaraible = nats_standard.Properties.Resources.DefaultDenylist; }
 
-            foreach (string item in BlackListVaraible.Split('|'))
+            foreach (string item in DenyListVaraible.Split('|'))
             {
                 string ext = item.ToLower();
                 if (!ext.StartsWith(".")) { ext = "." + ext; }
-                if (!BlackListArray.Contains(ext)) { BlackListArray.Add(ext); }
+                if (!DenyListArray.Contains(ext)) { DenyListArray.Add(ext); }
             }
-            return BlackListArray;
+            return DenyListArray;
         }
     }
 }

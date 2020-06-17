@@ -14,8 +14,8 @@ namespace Nats_Win
         NATS.ArgumentsObject.ArgumentsObject.eSearchType SearchType;
         NATS.Filters.FileExtentionFilter.filterType FilterType;
         int threadCount = 4;
-        List<string> BlackListItems = new List<string>();
-        List<string> WhiteListItems = new List<string>();
+        List<string> DenyListItems = new List<string>();
+        List<string> AproveListItems = new List<string>();
         List<string> responseItems = new List<string>();
         #endregion
 
@@ -24,7 +24,7 @@ namespace Nats_Win
         {
             get
             {
-                return (approvedExtensionsToolStripMenuItem.Checked) ? string.Join("|", WhiteListItems) : string.Join("|", BlackListItems);
+                return (approvedExtensionsToolStripMenuItem.Checked) ? string.Join("|", AproveListItems) : string.Join("|", DenyListItems);
             }
         }
         #endregion
@@ -40,9 +40,9 @@ namespace Nats_Win
         }
         private void Form1_Load(object sender, EventArgs e)
         {
-            BlackListItems.AddRange(nats_standard.Nats.DefaultBlackList());
+            DenyListItems.AddRange(nats_standard.Nats.DefaultDenyList());
             SearchType = NATS.ArgumentsObject.ArgumentsObject.eSearchType.Threaded;
-            FilterType = NATS.Filters.FileExtentionFilter.filterType.BlackList;
+            FilterType = NATS.Filters.FileExtentionFilter.filterType.DenyList;
             path = OpenFolder();
             this.Text = "Nats - " + path;
         }
@@ -202,11 +202,11 @@ namespace Nats_Win
         #region Custom Event Handles
 
         /// <summary>
-        /// White List Black List Direct Call (if you hit any of the white list black list items, for removing)
+        /// Aprove List Deny List Direct Call 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void WBDC(object sender, EventArgs e)
+        private void ADDC(object sender, EventArgs e)
         {
             string Ext = ((ToolStripItem)sender).Text;
             if (MessageBox.Show("Are you sure you want to remove " + Ext, "Remove Item", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
@@ -214,18 +214,18 @@ namespace Nats_Win
 
                 if (disapppvedExtensionsToolStripMenuItem.Checked)
                 {
-                    BlackListItems.Remove(Ext);
+                    DenyListItems.Remove(Ext);
                     disapppvedExtensionsToolStripMenuItem.DropDownItems.Remove((ToolStripItem)sender);
                 }
                 else
                 {
-                    WhiteListItems.Remove(Ext);
+                    AproveListItems.Remove(Ext);
                     approvedExtensionsToolStripMenuItem.DropDownItems.Remove((ToolStripItem)sender);
                 }
         }
 
         /// <summary>
-        /// Add Item Control on both the Black and white list dropdowns
+        /// Add Item Control on both the Aprove and Deny list dropdowns
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -243,18 +243,18 @@ namespace Nats_Win
 
                 if (disapppvedExtensionsToolStripMenuItem.Checked)
                 {
-                    if (!BlackListItems.Contains(item))
+                    if (!DenyListItems.Contains(item))
                     {
-                        BlackListItems.Add(item);
-                        disapppvedExtensionsToolStripMenuItem.DropDownItems.Add(item, null, WBDC);
+                        DenyListItems.Add(item);
+                        disapppvedExtensionsToolStripMenuItem.DropDownItems.Add(item, null, ADDC);
                     }
                 }
                 else
                 {
-                    if (!WhiteListItems.Contains(item))
+                    if (!AproveListItems.Contains(item))
                     {
-                        WhiteListItems.Add(item);
-                        approvedExtensionsToolStripMenuItem.DropDownItems.Add(item, null, WBDC);
+                        AproveListItems.Add(item);
+                        approvedExtensionsToolStripMenuItem.DropDownItems.Add(item, null, ADDC);
                     }
                 }
             }
@@ -332,27 +332,27 @@ namespace Nats_Win
         }
 
         /// <summary>
-        /// Generates the Dropdown custom items for Blacklist and whitelist
+        /// Generates the Dropdown custom items for Aprove and deny list
         /// </summary>
-        /// <param name="isBlackList"></param>
-        private void SetFilterDropdowns(bool isBlackList)
+        /// <param name="isDenyList"></param>
+        private void SetFilterDropdowns(bool isDenyList)
         {
-            disapppvedExtensionsToolStripMenuItem.Checked = isBlackList;
-            approvedExtensionsToolStripMenuItem.Checked = !isBlackList;
+            disapppvedExtensionsToolStripMenuItem.Checked = isDenyList;
+            approvedExtensionsToolStripMenuItem.Checked = !isDenyList;
             disapppvedExtensionsToolStripMenuItem.DropDownItems.Clear();
             approvedExtensionsToolStripMenuItem.DropDownItems.Clear();
-            if (isBlackList)
+            if (isDenyList)
             {
 
                 disapppvedExtensionsToolStripMenuItem.DropDownItems.Add("+Add", null, AddItem);
-                var dddItems = from string blItem in BlackListItems select new ToolStripDropDownButton(blItem, null, WBDC);
+                var dddItems = from string blItem in DenyListItems select new ToolStripDropDownButton(blItem, null, ADDC);
                 disapppvedExtensionsToolStripMenuItem.DropDownItems.AddRange(dddItems.ToArray());
             }
             else
             {
 
                 approvedExtensionsToolStripMenuItem.DropDownItems.Add("+Add", null, AddItem);
-                var ddItems = from string wlItem in WhiteListItems select new ToolStripDropDownButton(wlItem, null, WBDC);
+                var ddItems = from string wlItem in AproveListItems select new ToolStripDropDownButton(wlItem, null, ADDC);
                 approvedExtensionsToolStripMenuItem.DropDownItems.AddRange(ddItems.ToArray());
             }
 

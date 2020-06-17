@@ -125,7 +125,7 @@ namespace NATS.Index
         }
 
         /// <summary>
-        /// Returns if the file should be scanned. First attempts a Black list and Whitelist based search (hard coded) followed by a smart search
+        /// Returns if the file should be scanned. First attempts a deny list and aprove list based search (hard coded) followed by a smart search
         /// </summary>
         /// <param name="item"></param>
         /// <param name="filter"></param>
@@ -134,13 +134,13 @@ namespace NATS.Index
         {
             string Ext = item.Extension.ToLower();
             //writeout(Ext);
-            if (BlacklistFilter.Contains(Ext))  return false; 
-            if (WhiteListFilter.Contains(Ext))  return true; 
+            if (DenylistFilter.Contains(Ext))  return false; 
+            if (AproveListFilter.Contains(Ext))  return true; 
             return filter.IsValid(item);
         }
 
-        string[] BlacklistFilter = (from string str in nats_standard.Properties.Resources.DefaultBlacklist.Split('|') select "." + str).ToArray();
-        string[] WhiteListFilter = { ".cs", ".vb", ".txt", ".csproj", ".vbproj", ".html", ".aspx", ".ascx", ".js" };
+        string[] DenylistFilter = (from string str in nats_standard.Properties.Resources.DefaultDenylist.Split('|') select "." + str).ToArray();
+        string[] AproveListFilter = { ".cs", ".vb", ".txt", ".csproj", ".vbproj", ".html", ".aspx", ".ascx", ".js" };
 
         static object x = new object();
         void writeout(string s)
