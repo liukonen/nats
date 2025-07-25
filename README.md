@@ -1,6 +1,22 @@
-# NATS - Plain Text File Scanner
+# 🗃️ Nats — Not another Text Search
+## ⚠️ Project Archived – No Longer Maintained
 
-NATS is a basic plain text file scanner tool that allows you to search for keywords within text files. It provides various search options and can be used in both command-line and GUI versions available for Windows, Mac, and Linux.
+## 🚫 Project Status
+This project is no longer actively maintained. While Nats (Not Another Text Search) is functional, it contains known bugs that I will not be addressing.
+
+As of now, this repository is archived and read-only.
+
+## ✅ Recommended Alternative
+I recommend using ripgrep, a fast and reliable command-line file searcher that supports regex and is actively maintained.
+
+## 🛠️ Why This Project Was Built
+NATS was a basic plain text file scanner tool that allowed you to search for keywords within text files. It provides various search options and can be used in both command-line and GUI versions available for Windows, Mac, and Linux.
+It was written  to experiment with search optimization techniques. Though it served its purpose, better tools now exist.
+
+
+## 💬 Thanks
+Thanks to everyone who tried out Nats, reported bugs, and contributed ideas!
+
 
 ## License Information
 
